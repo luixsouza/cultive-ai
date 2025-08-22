@@ -1,8 +1,8 @@
-# GeoMapIFG: Monitoramento de Pastagens com NDVI e IA
+# CultiveAI: Monitoramento de Pastagens com NDVI e IA
 
 ## 📄 Descrição do Projeto
 
-O GeoMapIFG é uma ferramenta em Python desenvolvida para o monitoramento e análise da saúde de áreas de pastagem, com foco na identificação de áreas degradadas. Ele utiliza dados de satélite Sentinel-2 através da API do Google Earth Engine (GEE) para calcular o Índice de Vegetação por Diferença Normalizada (NDVI) e classificar as pastagens em diferentes níveis de degradação. Além disso, integra a inteligência artificial Gemini para gerar descrições textuais concisas sobre as condições da área mapeada, transformando os dados geoespaciais em insights compreensíveis.
+A plataforma CultiveAI é uma ferramenta em Python desenvolvida para o monitoramento e análise da saúde de áreas de pastagem, com foco na identificação de áreas degradadas. Ele utiliza dados de satélite Sentinel-2 através da API do Google Earth Engine (GEE) para calcular o Índice de Vegetação por Diferença Normalizada (NDVI) e classificar as pastagens em diferentes níveis de degradação. Além disso, integra a inteligência artificial Gemini para gerar descrições textuais concisas sobre as condições da área mapeada, transformando os dados geoespaciais em insights compreensíveis.
 
 Este projeto visa auxiliar agrônomos, produtores rurais e pesquisadores na avaliação rápida e visual da produtividade e do estado de conservação de pastagens.
 
@@ -38,11 +38,9 @@ Siga os passos abaixo para configurar o ambiente e instalar as dependências.
     Abra seu terminal/prompt de comando e clone o projeto:
 
     ```bash
-    git clone https://github.com/luixsouza/GeoMapIFG.git
-    cd GeoMapIFG
+    git clone https://github.com/luixsouza/cultive-ai.git
+    cd cultive-ai
     ```
-
-    _(Substitua `seu-usuario` e `GeoMapIFG` pelo caminho real do seu repositório)_
 
 2.  **Criar e Ativar Ambiente Virtual (Altamente Recomendado):**
     É uma boa prática usar ambientes virtuais para isolar as dependências do projeto.
@@ -102,7 +100,7 @@ Siga os passos abaixo para configurar o ambiente e instalar as dependências.
 Você precisará configurar seu ID de Projeto GCP e sua Chave de API Gemini.
 
 1.  **Criar o arquivo `.env`:**
-    Na raiz do projeto (`GeoMapIFG/`), crie um arquivo chamado `.env` e adicione as seguintes linhas:
+    Na raiz do projeto (`cultive-ai/`), crie um arquivo chamado `.env` e adicione as seguintes linhas:
 
     ```
     # .env
@@ -131,46 +129,3 @@ Você precisará configurar seu ID de Projeto GCP e sua Chave de API Gemini.
       3.  Clique em **"Create API key in new project"** ou **"Get API key"**.
       4.  Copie a chave de API gerada.
       5.  Cole esta chave no seu arquivo `.env`.
-
-## 🚀 Uso
-
-Com todas as dependências instaladas e as configurações no `.env` feitas, você pode executar a aplicação.
-
-1.  **Navegue para a pasta PARENTE do seu projeto `GeoMapIFG` no terminal.**
-    Por exemplo, se seu projeto está em `C:\Users\User\Desktop\GeoMapIFG`, navegue para `C:\Users\User\Desktop\`:
-    ```bash
-    cd C:\Users\User\Desktop\
-    ```
-2.  **Execute o script como um módulo Python:**
-    ```bash
-    python -m GeoMapIFG.main
-    ```
-3.  O script pedirá para você **colar os dados GeoJSON** da sua Área de Interesse (AOI). Cole o GeoJSON completo e pressione Enter.
-    - **Importante:** Certifique-se de colar o GeoJSON como um bloco único, e que ele seja do tipo `Polygon` ou `MultiPolygon` com o anel fechado (o último ponto igual ao primeiro). Use ferramentas como [geojson.io](https://geojson.io/) para criar e validar seu GeoJSON.
-4.  O script processará os dados, fará requisições ao Earth Engine e à API Gemini.
-5.  Ao final, um arquivo HTML chamado `mapa_degradacao_pastagem.html` será salvo no diretório de onde você executou o comando.
-6.  **Abra o arquivo `mapa_degradacao_pastagem.html`** em seu navegador web para visualizar o mapa interativo e o dashboard de análise.
-
-## 📂 Estrutura do Projeto
-
-```
-GeoMapIFG/
-├── main.py             # Ponto de entrada principal da aplicação.
-├── config.py           # Configurações globais (IDs, chaves, limiares, cores).
-├── data_utils.py       # Funções para entrada e processamento de dados GeoJSON.
-├── ee_utils.py         # Funções para interação com a API do Google Earth Engine (GEE).
-├── ai_analysis.py      # Funções para integração com a API Gemini e geração de texto.
-├── map_utils.py        # Funções para criação e renderização de mapas Folium.
-├── requirements.txt    # Lista de dependências Python.
-└── .env                # Variáveis de ambiente.
-```
-
-## 📊 Limiares de Classificação NDVI
-
-As classes de degradação da pastagem são baseadas em limiares de NDVI pré-definidos no `config.py`. É fundamental entender que esses limiares são **exemplos** e podem precisar ser ajustados/calibrados para a sua região específica ou tipo de pastagem, com base em conhecimento de campo ou literatura científica.
-
-- **NDVI \< 0.15:** Degradação Severa
-- **0.15 \<= NDVI \< 0.3:** Degradação Moderada
-- **0.3 \<= NDVI \< 0.5:** Pastagem Estressada / Baixa Produtividade
-- **0.5 \<= NDVI \< 0.7:** Pastagem Boa
-- **NDVI \>= 0.7:** Pastagem Excelente / Alta Produtividade
