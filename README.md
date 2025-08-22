@@ -129,3 +129,46 @@ Você precisará configurar seu ID de Projeto GCP e sua Chave de API Gemini.
       3.  Clique em **"Create API key in new project"** ou **"Get API key"**.
       4.  Copie a chave de API gerada.
       5.  Cole esta chave no seu arquivo `.env`.
+
+## 🏃 Como Rodar a Aplicação
+
+Depois de seguir todos os passos de instalação e configuração, você pode iniciar o servidor da API.
+
+## 🚀 Iniciar a API
+
+No seu terminal, com o ambiente virtual ativado, execute o seguinte comando:
+
+```bash
+uvicorn main:app --reload
+```
+
+### Explicação dos parâmetros:
+
+- **uvicorn** → O servidor web ASGI.
+- **main\:app** → Indica que o objeto FastAPI (`app`) está dentro do arquivo `main.py`.
+- **--reload** → O servidor será reiniciado automaticamente sempre que você fizer alterações no código (útil para desenvolvimento).
+
+Após executar o comando, você verá uma mensagem semelhante a:
+
+```
+Uvicorn running on http://127.0.0.1:8000
+```
+
+➡️ Isso indica que a API está ativa e pronta para receber requisições.
+
+---
+
+## 💻 Acessar o Frontend
+
+Para interagir com a aplicação, abra o arquivo **index.html** em seu navegador.
+Este arquivo, por enquanto, é o frontend da plataforma.
+
+- **Localização**: `cultive-ai/index.html`
+- **Instruções**: Abra o arquivo com seu navegador de preferência. Ele se conectará à API que você acabou de iniciar.
+
+---
+
+## ℹ️ Observação
+
+- O servidor **uvicorn** só precisa ser iniciado uma vez.
+- Mantenha o terminal com o servidor rodando enquanto você usa a plataforma.
