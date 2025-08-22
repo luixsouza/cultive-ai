@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Relatório de Análise de Pastagem - CultiveAI</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f9;
+        color: #333;
+      }
+      .container {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 25px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      h1,
+      h2 {
+        color: #2e7d32;
+        border-bottom: 2px solid #a5d6a7;
+        padding-bottom: 10px;
+      }
+      h1 {
+        font-size: 2em;
+        text-align: center;
+      }
+      h2 {
+        font-size: 1.5em;
+        margin-top: 30px;
+      }
+      .data-section {
+        margin-bottom: 25px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .grid-item {
+        background-color: #e8f5e9;
+        padding: 15px;
+        border-radius: 5px;
+      }
+      .grid-item strong {
+        color: #1b5e20;
+      }
+      .ai-report {
+        background-color: #f1f8e9;
+        padding: 20px;
+        border-left: 5px solid #689f38;
+        border-radius: 5px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+      }
+      th {
+        background-color: #388e3c;
+        color: white;
+      }
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+      img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        margin-top: 15px;
+      }
+      footer {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 0.9em;
+        color: #777;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Relatório de Análise de Pastagem</h1>
+      <footer>
+        Gerado por CultiveAI em {{ data.created_at.strftime('%d/%m/%Y') if
+        data.created_at else 'N/A' }}
+      </footer>
+
+      <h2>Resumo da Propriedade</h2>
+      <div class="grid">
+        <div class="grid-item">
+          <strong>Período Analisado:</strong><br />{{
+          data.analysis_period.start_date }} a {{ data.analysis_period.end_date
+          }}
+        </div>
+        <div class="grid-item">
+          <strong>Área Total:</strong><br />{{
+          "%.2f"|format(data.aoi_area_hectares) }} hectares
+        </div>
+        <div class="grid-item">
+          <strong>Imagem de Satélite:</strong><br />{{
+          data.satellite_image_info.id }}
+        </div>
+        <div class="grid-item">
+          <strong>Cobertura de Nuvens:</strong><br />{{
+          "%.2f"|format(data.satellite_image_info.cloud_percentage) }}%
+        </div>
+      </div>
+
+      <h2>
+        <img
+          src="https://img.icons8.com/color/48/000000/robot.png"
+          style="vertical-align: middle; width: 32px"
+        />
+        Diagnóstico por Inteligência Artificial
+      </h2>
+      <div class="ai-report">{{ ai_description_html | safe }}</div>
+
+      <h2>Distribuição da Saúde da Pastagem</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Classe</th>
+            <th>Porcentagem da Área</th>
+            <th>Área (Hectares)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in data.degradation_summary %}
+          <tr>
+            <td>{{ item.class_name }}</td>
+            <td>{{ "%.2f"|format(item.percentage) }}%</td>
+            <td>{{ "%.2f"|format(item.area_hectares) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <h2>Visualização do Mapa de Degradação</h2>
+      <p>
+        A imagem abaixo representa a classificação da saúde da pastagem na área
+        delimitada.
+      </p>
+      <div
+        style="
+          text-align: center;
+          padding: 20px;
+          background: #eee;
+          border-radius: 5px;
+        "
+      >
+        <i
+          >A visualização de mapas estáticos será implementada em uma versão
+          futura. Por favor, consulte o mapa interativo na plataforma.</i
+        >
+      </div>
+    </div>
+  </body>
+</html>
