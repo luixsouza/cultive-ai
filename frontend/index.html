@@ -1,35 +1,39 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GeoMapIFG - Análise de Pastagem</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cultive AI - Geomapeamento</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <div id="map"></div>
     <div id="panel">
-        <div class="panel-header">
-            <h2>Análise de Pastagem</h2>
-            <p>Use as ferramentas de desenho no mapa para selecionar uma área.</p>
-        </div>
-        <button id="analyzeBtn" disabled>Analisar Área Selecionada</button>
-        <div id="loader" class="hidden">
-            <div class="spinner"></div>
-            <p>Analisando...</p>
-        </div>
+      <div class="panel-header">
+        <h2>Cultive AI</h2>
+        <p>Use as ferramentas de desenho no mapa para selecionar uma área.</p>
+      </div>
+      <button id="analyzeBtn" disabled>Analisar Área Selecionada</button>
+      <div id="loader" class="hidden">
+        <div class="spinner"></div>
+        <p>Analisando...</p>
+      </div>
 
-        <div id="results-container" class="hidden">
-            <div class="tab-buttons">
-                </div>
-            <div class="tab-content">
-                </div>
-        </div>
+      <div id="results-container" class="hidden">
+        <div class="tab-buttons"></div>
+        <div class="tab-content"></div>
+      </div>
     </div>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
