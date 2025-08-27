@@ -1,3 +1,3 @@
-from sqlalchemy.orm import declarative_base
-
-Base = declarative_base()
+from .base_class import Base
+from ..models.user import User
+from ..models.analysis import AnalysisReport

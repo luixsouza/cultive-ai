@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, JSON, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from ..db.base import Base
+from ..db.base_class import Base
 
 class AnalysisReport(Base):
     __tablename__ = "analysis_reports"
