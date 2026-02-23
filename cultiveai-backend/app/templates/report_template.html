@@ -1,171 +1,448 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Relatório de Análise de Pastagem - CultiveAI</title>
-    <style>
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          "Helvetica Neue", Arial, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 0;
-        background-color: #f4f4f9;
-        color: #333;
-      }
-      .container {
-        max-width: 900px;
-        margin: 20px auto;
-        padding: 25px;
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-      h1,
-      h2 {
-        color: #2e7d32;
-        border-bottom: 2px solid #a5d6a7;
-        padding-bottom: 10px;
-      }
-      h1 {
-        font-size: 2em;
-        text-align: center;
-      }
-      h2 {
-        font-size: 1.5em;
-        margin-top: 30px;
-      }
-      .data-section {
-        margin-bottom: 25px;
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-      }
-      .grid-item {
-        background-color: #e8f5e9;
-        padding: 15px;
-        border-radius: 5px;
-      }
-      .grid-item strong {
-        color: #1b5e20;
-      }
-      .ai-report {
-        background-color: #f1f8e9;
-        padding: 20px;
-        border-left: 5px solid #689f38;
-        border-radius: 5px;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 15px;
-      }
-      th,
-      td {
-        text-align: left;
-        padding: 12px;
-        border-bottom: 1px solid #ddd;
-      }
-      th {
-        background-color: #388e3c;
-        color: white;
-      }
-      tr:nth-child(even) {
-        background-color: #f2f2f2;
-      }
-      img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 5px;
-        margin-top: 15px;
-      }
-      footer {
-        text-align: center;
-        margin-top: 30px;
-        font-size: 0.9em;
-        color: #777;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relatório de Análise de Pastagem - CultiveAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6; background: #f0f4f0; color: #1e293b;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .container { max-width: 900px; margin: 0 auto; background: #fff; min-height: 100vh; }
+    .mi { font-family: 'Material Icons Round'; font-size: 18px; vertical-align: middle; }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #2D6A4F 0%, #40916C 50%, #52B788 100%);
+      color: white; padding: 40px 36px 32px; position: relative; overflow: hidden;
+    }
+    .header::before {
+      content: ''; position: absolute; top: -50%; right: -10%; width: 300px; height: 300px;
+      background: rgba(255,255,255,0.05); border-radius: 50%;
+    }
+    .header .logo { font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; margin-bottom: 12px; }
+    .header h1 { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+    .header .subtitle { font-size: 14px; opacity: 0.8; }
+    .header .meta {
+      display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px;
+      padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 13px;
+    }
+    .header .meta-item { display: flex; align-items: center; gap: 6px; }
+    .header .meta-label { opacity: 0.7; }
+    .header .meta-value { font-weight: 600; }
+
+    /* Content */
+    .content { padding: 28px 36px 36px; }
+    .section { margin-bottom: 28px; }
+    .section-title {
+      font-size: 16px; font-weight: 700; color: #2D6A4F;
+      padding-bottom: 8px; margin-bottom: 16px;
+      border-bottom: 2px solid #d1fae5;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* Stats grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+    .stat-card {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border-radius: 12px; padding: 14px 16px; border: 1px solid #bbf7d0;
+    }
+    .stat-label { font-size: 10px; color: #166534; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+    .stat-value { font-size: 22px; font-weight: 800; color: #1e293b; }
+    .stat-unit { font-size: 12px; color: #64748b; font-weight: 500; }
+    .stat-text { font-size: 13px; font-weight: 600; color: #1e293b; line-height: 1.4; }
+
+    /* NDVI stats */
+    .ndvi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .ndvi-card { border-radius: 12px; padding: 14px 16px; border: 1px solid #e2e8f0; }
+    .ndvi-card .icon-wrap {
+      width: 32px; height: 32px; border-radius: 8px; display: inline-flex;
+      align-items: center; justify-content: center; margin-bottom: 8px;
+    }
+    .ndvi-card.min { background: #fef2f2; border-color: #fecaca; }
+    .ndvi-card.min .icon-wrap { background: #fee2e2; color: #dc2626; }
+    .ndvi-card.mean { background: #fffbeb; border-color: #fde68a; }
+    .ndvi-card.mean .icon-wrap { background: #fef3c7; color: #d97706; }
+    .ndvi-card.max { background: #f0fdf4; border-color: #bbf7d0; }
+    .ndvi-card.max .icon-wrap { background: #dcfce7; color: #16a34a; }
+    .ndvi-card.health { background: #f8fafc; border-color: #e2e8f0; }
+    .ndvi-card.health .icon-wrap { background: #f1f5f9; color: #64748b; }
+    .ndvi-label { font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+    .ndvi-value { font-size: 20px; font-weight: 800; }
+    .ndvi-card.min .ndvi-value { color: #dc2626; }
+    .ndvi-card.mean .ndvi-value { color: #d97706; }
+    .ndvi-card.max .ndvi-value { color: #16a34a; }
+
+    /* Images grid */
+    .images-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .image-card { border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; background: #f8fafc; }
+    .image-card.full-width { grid-column: 1 / -1; }
+    .image-card img { width: 100%; height: auto; display: block; }
+    .image-card .image-caption {
+      padding: 10px 14px; font-size: 13px; font-weight: 600; color: #334155;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .image-caption .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+    /* Degradation bars */
+    .deg-bars { margin-bottom: 20px; }
+    .deg-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .deg-bar-label {
+      font-size: 13px; font-weight: 500; color: #334155; width: 180px; flex-shrink: 0;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .deg-bar-track { flex: 1; height: 20px; background: #f1f5f9; border-radius: 10px; overflow: hidden; }
+    .deg-bar-fill { height: 100%; border-radius: 10px; min-width: 3px; transition: width 0.3s; }
+    .deg-bar-pct { font-size: 13px; font-weight: 700; color: #334155; width: 80px; text-align: right; flex-shrink: 0; }
+
+    /* Degradation table */
+    .deg-table { width: 100%; border-collapse: collapse; font-size: 14px; border-radius: 8px; overflow: hidden; }
+    .deg-table thead th {
+      background: #2D6A4F; color: white; padding: 10px 14px; text-align: left;
+      font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px;
+    }
+    .deg-table thead th:not(:first-child) { text-align: right; }
+    .deg-table tbody td { padding: 10px 14px; border-bottom: 1px solid #e2e8f0; }
+    .deg-table tbody td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+    .deg-table tbody tr:last-child td { border-bottom: none; }
+    .deg-table tbody tr:nth-child(even) { background: #f8fafc; }
+    .class-indicator { display: inline-flex; align-items: center; gap: 8px; }
+    .class-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+
+    /* Legend */
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      padding: 12px 16px; background: #f8fafc; border-radius: 8px;
+      border: 1px solid #e2e8f0; margin-top: 12px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #475569; }
+    .legend-color { width: 14px; height: 14px; border-radius: 3px; display: inline-block; border: 1px solid rgba(0,0,0,0.1); }
+
+    /* AI Report */
+    .ai-report {
+      background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 100%);
+      border-left: 4px solid #2D6A4F; border-radius: 0 12px 12px 0; padding: 24px 28px;
+    }
+    .ai-report-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #d1fae5;
+    }
+    .ai-report-header .icon-box {
+      width: 36px; height: 36px; border-radius: 10px; background: #dcfce7;
+      display: flex; align-items: center; justify-content: center; color: #2D6A4F; flex-shrink: 0;
+    }
+    .ai-report-header h3 { font-size: 15px; font-weight: 700; color: #1e293b; }
+    .ai-report-header p { font-size: 12px; color: #64748b; }
+    .ai-report-body { font-size: 14px; line-height: 1.7; color: #374151; }
+    .ai-report-body h1, .ai-report-body h2, .ai-report-body h3, .ai-report-body h4 { color: #2D6A4F; margin-top: 18px; margin-bottom: 6px; }
+    .ai-report-body h1 { font-size: 18px; }
+    .ai-report-body h2 { font-size: 16px; padding-bottom: 6px; border-bottom: 1px solid #bbf7d0; }
+    .ai-report-body h3 { font-size: 14px; }
+    .ai-report-body h4 { font-size: 13px; }
+    .ai-report-body p { margin: 8px 0; }
+    .ai-report-body ul, .ai-report-body ol { padding-left: 22px; margin: 8px 0; }
+    .ai-report-body li { margin: 4px 0; }
+    .ai-report-body table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13px; }
+    .ai-report-body th, .ai-report-body td { padding: 8px 10px; border: 1px solid #d1fae5; text-align: left; }
+    .ai-report-body th { background: #dcfce7; font-weight: 600; color: #166534; }
+    .ai-report-body strong { font-weight: 600; }
+    .ai-report-body em { color: #64748b; }
+    .ai-report-body hr { border: none; border-top: 1px solid #bbf7d0; margin: 16px 0; }
+
+    /* No-images info box */
+    .info-box {
+      background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 16px 20px;
+      display: flex; align-items: flex-start; gap: 10px; color: #1e40af; font-size: 13px;
+    }
+    .info-box .mi { color: #3b82f6; flex-shrink: 0; }
+
+    /* Footer */
+    .footer {
+      text-align: center; padding: 24px 36px;
+      border-top: 2px solid #d1fae5; color: #94a3b8; font-size: 12px;
+      background: #f8fafc;
+    }
+    .footer .brand { color: #2D6A4F; font-weight: 700; }
+
+    @media print {
+      body { background: white; }
+      .container { box-shadow: none; }
+      .section { page-break-inside: avoid; }
+    }
+    @media (max-width: 640px) {
+      .stats-grid, .ndvi-grid { grid-template-columns: repeat(2, 1fr); }
+      .images-grid { grid-template-columns: 1fr; }
+      .header { padding: 24px 20px 20px; }
+      .content { padding: 20px; }
+      .deg-bar-label { width: 120px; font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">CultiveAI</div>
       <h1>Relatório de Análise de Pastagem</h1>
-      <footer>
-        Gerado por CultiveAI em {{ data.created_at.strftime('%d/%m/%Y') if
-        data.created_at else 'N/A' }}
-      </footer>
-
-      <h2>Resumo da Propriedade</h2>
-      <div class="grid">
-        <div class="grid-item">
-          <strong>Período Analisado:</strong><br />{{
-          data.analysis_period.start_date }} a {{ data.analysis_period.end_date
-          }}
+      <div class="subtitle">Análise automatizada por sensoriamento remoto e inteligência artificial</div>
+      <div class="meta">
+        <div class="meta-item">
+          <span class="mi">calendar_today</span>
+          <span class="meta-label">Gerado em:</span>
+          <span class="meta-value">{{ generated_at | default('N/A', true) }}</span>
         </div>
-        <div class="grid-item">
-          <strong>Área Total:</strong><br />{{
-          "%.2f"|format(data.aoi_area_hectares) }} hectares
+        {% if data.get('property_name') %}
+        <div class="meta-item">
+          <span class="mi">location_on</span>
+          <span class="meta-label">Propriedade:</span>
+          <span class="meta-value">{{ data.property_name }}</span>
         </div>
-        <div class="grid-item">
-          <strong>Imagem de Satélite:</strong><br />{{
-          data.satellite_image_info.id }}
+        {% endif %}
+        <div class="meta-item">
+          <span class="mi">satellite_alt</span>
+          <span class="meta-label">Plataforma:</span>
+          <span class="meta-value">CultiveAI</span>
         </div>
-        <div class="grid-item">
-          <strong>Cobertura de Nuvens:</strong><br />{{
-          "%.2f"|format(data.satellite_image_info.cloud_percentage) }}%
-        </div>
-      </div>
-
-      <h2>
-        <img
-          src="https://img.icons8.com/color/48/000000/robot.png"
-          style="vertical-align: middle; width: 32px"
-        />
-        Diagnóstico por Inteligência Artificial
-      </h2>
-      <div class="ai-report">{{ ai_description_html | safe }}</div>
-
-      <h2>Distribuição da Saúde da Pastagem</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Classe</th>
-            <th>Porcentagem da Área</th>
-            <th>Área (Hectares)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in data.degradation_summary %}
-          <tr>
-            <td>{{ item.class_name }}</td>
-            <td>{{ "%.2f"|format(item.percentage) }}%</td>
-            <td>{{ "%.2f"|format(item.area_hectares) }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-
-      <h2>Visualização do Mapa de Degradação</h2>
-      <p>
-        A imagem abaixo representa a classificação da saúde da pastagem na área
-        delimitada.
-      </p>
-      <div
-        style="
-          text-align: center;
-          padding: 20px;
-          background: #eee;
-          border-radius: 5px;
-        "
-      >
-        <i
-          >A visualização de mapas estáticos será implementada em uma versão
-          futura. Por favor, consulte o mapa interativo na plataforma.</i
-        >
       </div>
     </div>
-  </body>
+
+    <div class="content">
+      <!-- Summary Stats -->
+      <div class="section">
+        <div class="section-title">
+          <span class="mi" style="color: #2D6A4F;">summarize</span>
+          Resumo da Análise
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Período</div>
+            {% set period = data.get('analysis_period') or {} %}
+            <div class="stat-text">
+              {{ period.get('start_date', 'N/A') }}<br>a {{ period.get('end_date', 'N/A') }}
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Área Total</div>
+            <div class="stat-value">{{ "%.2f"|format(data.get('aoi_area_hectares', 0)|float) }} <span class="stat-unit">ha</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Satélite</div>
+            {% set sat_info = data.get('satellite_image_info') or {} %}
+            <div class="stat-text" style="word-break: break-all;">
+              {{ sat_info.get('id', 'N/A') }}
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Cobertura de Nuvens</div>
+            {% set cloud_pct = sat_info.get('cloud_percentage') %}
+            <div class="stat-value">
+              {% if cloud_pct is not none %}
+                {{ "%.1f"|format(cloud_pct|float) }}<span class="stat-unit">%</span>
+              {% else %}
+                <span class="stat-unit">N/A</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NDVI Statistics -->
+      <div class="section">
+        <div class="section-title">
+          <span class="mi" style="color: #2D6A4F;">grass</span>
+          Índices de Vegetação (NDVI)
+        </div>
+        <p style="font-size: 12px; color: #64748b; margin-bottom: 14px; line-height: 1.5;">
+          O NDVI (Índice de Vegetação por Diferença Normalizada) varia de -1 a 1. Valores acima de 0.5 indicam vegetação densa e saudável; valores abaixo de 0.3 indicam solo exposto ou vegetação degradada.
+        </p>
+        {% set ndvi = data.get('ndvi_stats') or {} %}
+        <div class="ndvi-grid">
+          <div class="ndvi-card min">
+            <div class="icon-wrap"><span class="mi">trending_down</span></div>
+            <div class="ndvi-label">Mínimo</div>
+            <div class="ndvi-value">{{ "%.4f"|format(ndvi.get('min', 0)|float) if ndvi.get('min') is not none else 'N/A' }}</div>
+          </div>
+          <div class="ndvi-card mean">
+            <div class="icon-wrap"><span class="mi">remove</span></div>
+            <div class="ndvi-label">Médio</div>
+            <div class="ndvi-value">{{ "%.4f"|format(ndvi.get('mean', 0)|float) if ndvi.get('mean') is not none else 'N/A' }}</div>
+          </div>
+          <div class="ndvi-card max">
+            <div class="icon-wrap"><span class="mi">trending_up</span></div>
+            <div class="ndvi-label">Máximo</div>
+            <div class="ndvi-value">{{ "%.4f"|format(ndvi.get('max', 0)|float) if ndvi.get('max') is not none else 'N/A' }}</div>
+          </div>
+          <div class="ndvi-card health">
+            <div class="icon-wrap" style="background: {{ health_color }}20; color: {{ health_color }};"><span class="mi">monitor_heart</span></div>
+            <div class="ndvi-label">Saúde Geral</div>
+            <div class="ndvi-value" style="color: {{ health_color }};">{{ health_label | default('N/A', true) }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Satellite Images (if available from GEE thumbnails) -->
+      {% set thumbs = data.get('thumbnail_urls') or {} %}
+      {% if thumbs.get('rgb') or thumbs.get('ndvi') or thumbs.get('degradation') %}
+      <div class="section">
+        <div class="section-title">
+          <span class="mi" style="color: #2D6A4F;">satellite</span>
+          Imagens de Satélite
+        </div>
+        <div class="images-grid">
+          {% if thumbs.get('rgb') %}
+          <div class="image-card">
+            <div class="image-caption">
+              <span class="dot" style="background: #3b82f6;"></span>
+              Imagem Real (RGB) - Sentinel-2
+            </div>
+            <img src="{{ thumbs.rgb }}" alt="Imagem RGB" />
+          </div>
+          {% endif %}
+          {% if thumbs.get('ndvi') %}
+          <div class="image-card">
+            <div class="image-caption">
+              <span class="dot" style="background: #16a34a;"></span>
+              Índice de Vegetação (NDVI)
+            </div>
+            <img src="{{ thumbs.ndvi }}" alt="Mapa NDVI" />
+          </div>
+          {% endif %}
+          {% if thumbs.get('degradation') %}
+          <div class="image-card full-width">
+            <div class="image-caption">
+              <span class="dot" style="background: #f59e0b;"></span>
+              Classificação da Saúde da Pastagem
+            </div>
+            <img src="{{ thumbs.degradation }}" alt="Mapa de degradação" />
+            <div class="legend">
+              <div class="legend-item"><span class="legend-color" style="background: #1a9641;"></span> Excelente</div>
+              <div class="legend-item"><span class="legend-color" style="background: #66bd63;"></span> Boa</div>
+              <div class="legend-item"><span class="legend-color" style="background: #fdae61;"></span> Estressada</div>
+              <div class="legend-item"><span class="legend-color" style="background: #d73027;"></span> Moderada</div>
+              <div class="legend-item"><span class="legend-color" style="background: #a50026;"></span> Severa</div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% else %}
+      <div class="section">
+        <div class="info-box">
+          <span class="mi">info</span>
+          <div>
+            <strong>Imagens de satélite</strong><br>
+            As imagens interativas do mapa estão disponíveis na plataforma CultiveAI.
+            Acesse o relatório online para visualizar as camadas RGB, NDVI e classificação da pastagem.
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Degradation Distribution -->
+      {% if degradation_with_colors and degradation_with_colors | length > 0 %}
+      <div class="section">
+        <div class="section-title">
+          <span class="mi" style="color: #2D6A4F;">donut_small</span>
+          Distribuição da Saúde da Pastagem
+        </div>
+
+        <!-- Visual bars -->
+        <div class="deg-bars">
+          {% for item in degradation_with_colors %}
+          <div class="deg-bar-row">
+            <div class="deg-bar-label">
+              <span class="class-dot" style="background: {{ item.color }};"></span>
+              {{ item.get('class_name', 'N/A') }}
+            </div>
+            <div class="deg-bar-track">
+              <div class="deg-bar-fill" style="width: {{ item.get('percentage', 0) }}%; background: {{ item.color }};"></div>
+            </div>
+            <div class="deg-bar-pct">{{ "%.1f"|format(item.get('percentage', 0)|float) }}% ({{ "%.1f"|format(item.get('area_hectares', 0)|float) }} ha)</div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Detailed table -->
+        <table class="deg-table">
+          <thead>
+            <tr>
+              <th>Classe</th>
+              <th>Porcentagem</th>
+              <th>Área (ha)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in degradation_with_colors %}
+            <tr>
+              <td>
+                <span class="class-indicator">
+                  <span class="class-dot" style="background: {{ item.color }};"></span>
+                  {{ item.get('class_name', 'N/A') }}
+                </span>
+              </td>
+              <td>{{ "%.2f"|format(item.get('percentage', 0)|float) }}%</td>
+              <td>{{ "%.2f"|format(item.get('area_hectares', 0)|float) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      <!-- AI Diagnosis -->
+      {% if ai_description_html %}
+      <div class="section">
+        <div class="section-title">
+          <span class="mi" style="color: #2D6A4F;">smart_toy</span>
+          Diagnóstico por Inteligência Artificial
+        </div>
+        <div class="ai-report">
+          <div class="ai-report-header">
+            <div class="icon-box"><span class="mi">psychology</span></div>
+            <div>
+              <h3>Análise Detalhada</h3>
+              <p>Gerado automaticamente pelo CultiveAI com base nos dados de sensoriamento remoto</p>
+            </div>
+          </div>
+          <div class="ai-report-body" id="ai-report-content">{{ ai_description_html | safe }}</div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>Relatório gerado automaticamente pela plataforma <span class="brand">CultiveAI</span></p>
+      <p style="margin-top: 4px;">Dados: Sentinel-2 (Copernicus/ESA) &bull; Processamento: Google Earth Engine &bull; IA: Análise por modelo de linguagem</p>
+      <p style="margin-top: 8px; font-size: 11px; color: #cbd5e1;">© {{ generated_at[:4] if generated_at and generated_at|length >= 4 else '2026' }} CultiveAI — Todos os direitos reservados</p>
+    </div>
+  </div>
+
+  <!-- Client-side markdown rendering fallback (if server-side markdown library was unavailable) -->
+  <script>
+    (function() {
+      var el = document.getElementById('ai-report-content');
+      if (!el) return;
+      var html = el.innerHTML.trim();
+      // If content has NO html tags, it's likely raw markdown text
+      if (html && !html.match(/<(h[1-6]|p|ul|ol|table|strong|em)\b/i)) {
+        // Load marked.js dynamically for client-side rendering
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+        s.onload = function() {
+          if (typeof marked !== 'undefined') {
+            el.innerHTML = marked.parse(el.textContent || el.innerText || '');
+          }
+        };
+        document.head.appendChild(s);
+      }
+    })();
+  </script>
+</body>
 </html>

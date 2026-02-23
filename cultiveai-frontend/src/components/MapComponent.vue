@@ -1,64 +1,96 @@
 <template>
-  <div class="map-wrapper">
+  <div class="relative rounded-xl md:rounded-2xl overflow-hidden isolate">
     <!-- Instructions for drawing mode -->
-    <div v-if="!isDisplayMode && !hasDrawnArea && !drawLoading" class="map-instructions">
-      <div class="instructions-header">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <strong>Como mapear a area</strong>
+    <div
+      v-if="!isDisplayMode && !hasDrawnArea && !drawLoading"
+      class="absolute top-[72px] left-2 right-[60px] md:top-3 md:left-[52px] md:right-auto md:max-w-[260px] bg-white/95 backdrop-blur-md p-2.5 md:p-3.5 rounded-lg md:rounded-xl shadow-md z-[1000] text-xs md:text-[13px] leading-snug border border-primary/15"
+    >
+      <div class="flex items-center gap-1.5 mb-1.5 text-primary text-[13px] font-semibold">
+        <span class="material-icons-round text-base">pin_drop</span>
+        Como mapear a area
       </div>
-      <ol>
+      <ol class="m-0 pl-4 text-slate-500 space-y-0.5">
         <li>Use os botoes na barra de ferramentas acima</li>
-        <li><b>Poligono:</b> clique nos vertices e finalize no primeiro ponto</li>
-        <li><b>Retangulo:</b> clique e arraste para selecionar</li>
+        <li><b class="text-slate-700">Poligono:</b> clique nos vertices e finalize no primeiro ponto</li>
+        <li><b class="text-slate-700">Retangulo:</b> clique e arraste para selecionar</li>
       </ol>
     </div>
 
     <!-- Loading draw tools -->
-    <div v-if="drawLoading" class="map-instructions">
-      <div class="instructions-header">
-        <div class="mini-spinner"></div>
-        <strong>Carregando ferramentas...</strong>
+    <div
+      v-if="drawLoading"
+      class="absolute top-[72px] left-2 right-[60px] md:top-3 md:left-[52px] md:right-auto md:max-w-[260px] bg-white/95 backdrop-blur-md p-2.5 md:p-3.5 rounded-lg md:rounded-xl shadow-md z-[1000] text-xs md:text-[13px] border border-primary/15"
+    >
+      <div class="flex items-center gap-1.5 text-primary font-semibold">
+        <div class="w-[18px] h-[18px] border-2 border-slate-200 border-t-primary rounded-full animate-spin"></div>
+        Carregando ferramentas...
       </div>
     </div>
 
     <!-- Area info badge -->
-    <div v-if="!isDisplayMode && hasDrawnArea" class="area-info">
-      <span class="area-badge">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/></svg>
+    <div
+      v-if="!isDisplayMode && hasDrawnArea"
+      class="absolute top-2 left-2 right-2 md:top-3 md:left-1/2 md:right-auto md:-translate-x-1/2 bg-white/95 backdrop-blur-md px-3.5 md:px-4.5 py-2 md:py-2.5 rounded-full z-[1000] flex items-center justify-center gap-2.5 md:gap-3.5 shadow-md border border-primary/20"
+    >
+      <span class="flex items-center gap-1.5 text-primary text-[13px] md:text-sm">
+        <span class="material-icons-round text-base">place</span>
         <strong>{{ drawnAreaHectares }} ha</strong> selecionados
       </span>
-      <button class="btn-clear" @click="clearDrawnArea">Limpar area</button>
+      <button
+        @click="clearDrawnArea"
+        class="bg-transparent border border-slate-200 text-slate-500 px-2.5 md:px-3 py-1 rounded-md text-[11px] md:text-xs cursor-pointer hover:bg-danger-bg hover:border-danger hover:text-red-700 transition-colors"
+      >
+        Limpar area
+      </button>
     </div>
 
     <!-- Map container -->
-    <div id="map-container" ref="mapContainer"></div>
+    <div id="map-container" ref="mapContainer" class="h-[350px] md:h-[600px] w-full"></div>
 
     <!-- Filter controls for display mode -->
-    <div v-if="isDisplayMode" class="filter-controls">
-      <h4>Camadas de Analise</h4>
-      <div class="filter-buttons">
+    <div
+      v-if="isDisplayMode"
+      class="absolute bottom-2 left-2 right-2 md:top-3 md:left-3 md:right-auto md:bottom-auto md:min-w-[170px] bg-white/95 backdrop-blur-md p-3 md:p-4 rounded-xl shadow-md z-[1000] border border-black/[.06]"
+    >
+      <h4 class="m-0 mb-2 md:mb-3 text-[11px] md:text-[13px] text-slate-700 uppercase tracking-wide font-semibold">Camadas de Analise</h4>
+      <div class="flex flex-wrap md:flex-col gap-1">
         <button
           v-for="filter in availableFilters"
           :key="filter.key"
-          :class="['filter-btn', { active: activeFilter === filter.key }]"
+          :class="[
+            'px-2.5 md:px-3 py-1.5 md:py-2 border rounded-md md:rounded-lg cursor-pointer text-left text-xs md:text-[13px] flex items-center gap-1.5 md:gap-2 transition-all',
+            activeFilter === filter.key
+              ? 'bg-primary-bg border-primary text-primary-dark font-medium'
+              : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'
+          ]"
           @click="toggleFilter(filter.key)"
         >
-          <span class="filter-dot" :style="{ background: getFilterColor(filter.key) }"></span>
+          <span class="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full shrink-0" :style="{ background: getFilterColor(filter.key) }"></span>
           {{ filter.name }}
         </button>
       </div>
-      <div v-if="activeFilter" class="opacity-control">
-        <label>Opacidade: {{ Math.round(filterOpacity * 100) }}%</label>
-        <input type="range" min="0" max="100" :value="filterOpacity * 100" @input="updateOpacity($event.target.value / 100)" />
+      <div v-if="activeFilter" class="mt-2 md:mt-3 pt-2 md:pt-3 border-t border-slate-200">
+        <label class="block text-[10px] md:text-[11px] text-slate-400 mb-1 md:mb-1.5">Opacidade: {{ Math.round(filterOpacity * 100) }}%</label>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          :value="filterOpacity * 100"
+          @input="updateOpacity($event.target.value / 100)"
+          class="opacity-slider w-full"
+        />
       </div>
     </div>
 
     <!-- Legend -->
-    <div v-if="isDisplayMode && activeFilter && getLegendItems().length > 0" class="map-legend">
-      <h4>{{ getLegendTitle() }}</h4>
-      <div class="legend-items">
-        <div v-for="item in getLegendItems()" :key="item.label" class="legend-item">
-          <span class="legend-color" :style="{ background: item.color }"></span>
+    <div
+      v-if="isDisplayMode && activeFilter && getLegendItems().length > 0"
+      class="absolute top-2 right-2 md:top-auto md:right-auto md:bottom-8 md:left-3 bg-white/95 backdrop-blur-md p-2 md:p-3 rounded-lg md:rounded-xl shadow-md z-[1000] border border-black/[.06]"
+    >
+      <h4 class="m-0 mb-1.5 md:mb-2 text-[10px] md:text-xs text-slate-700 font-semibold">{{ getLegendTitle() }}</h4>
+      <div class="flex flex-col gap-0.5 md:gap-1">
+        <div v-for="item in getLegendItems()" :key="item.label" class="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-[11px] text-slate-500">
+          <span class="w-4 md:w-5 h-2 md:h-2.5 rounded-sm shrink-0" :style="{ background: item.color }"></span>
           <span>{{ item.label }}</span>
         </div>
       </div>
@@ -417,188 +449,8 @@ function clearDrawnArea() {
 </script>
 
 <style scoped>
-/* === MOBILE-FIRST === */
-
-.map-wrapper {
-  position: relative;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-#map-container {
-  height: 350px;
-  width: 100%;
-}
-
-.map-instructions {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  right: 60px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  padding: 10px 12px;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  font-size: 12px;
-  line-height: 1.4;
-  border: 1px solid rgba(46, 125, 50, 0.15);
-}
-
-.instructions-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 6px;
-  color: #2e7d32;
-  font-size: 13px;
-}
-
-.map-instructions ol {
-  margin: 0;
-  padding-left: 16px;
-}
-
-.map-instructions li {
-  margin: 3px 0;
-  color: #555;
-}
-
-.mini-spinner {
-  width: 18px;
-  height: 18px;
-  border: 2px solid #e0e0e0;
-  border-top-color: #2e7d32;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.area-info {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  right: 8px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  padding: 8px 14px;
-  border-radius: 20px;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(46, 125, 50, 0.2);
-}
-
-.area-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #2e7d32;
-  font-size: 13px;
-}
-
-.btn-clear {
-  background: none;
-  border: 1px solid #e0e0e0;
-  color: #666;
-  padding: 4px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 11px;
-  transition: all 0.2s;
-}
-
-.btn-clear:hover {
-  background: #ffebee;
-  border-color: #ef5350;
-  color: #c62828;
-}
-
-.filter-controls {
-  position: absolute;
-  bottom: 8px;
-  left: 8px;
-  right: 8px;
-  color: #333;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  padding: 12px;
-  border-radius: 10px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
-  z-index: 1000;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.filter-controls h4 {
-  margin: 0 0 8px;
-  font-size: 11px;
-  color: #333;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.filter-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.filter-btn {
-  padding: 6px 10px;
-  border: 1px solid #e8e8e8;
-  background: white;
-  color: #333;
-  border-radius: 6px;
-  cursor: pointer;
-  text-align: left;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.2s;
-}
-
-.filter-btn:hover {
-  background: #f5f5f5;
-  border-color: #ccc;
-}
-
-.filter-btn.active {
-  background: #e8f5e9;
-  border-color: #2e7d32;
-  color: #1b5e20;
-  font-weight: 500;
-}
-
-.filter-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.opacity-control {
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid #eee;
-}
-
-.opacity-control label {
-  display: block;
-  font-size: 10px;
-  color: #888;
-  margin-bottom: 4px;
-}
-
-.opacity-control input[type="range"] {
-  width: 100%;
+/* Opacity slider - needs custom styling that Tailwind can't handle */
+.opacity-slider {
   height: 4px;
   -webkit-appearance: none;
   appearance: none;
@@ -607,7 +459,7 @@ function clearDrawnArea() {
   outline: none;
 }
 
-.opacity-control input[type="range"]::-webkit-slider-thumb {
+.opacity-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 20px;
   height: 20px;
@@ -618,159 +470,10 @@ function clearDrawnArea() {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
-.map-legend {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  padding: 8px 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.map-legend h4 {
-  margin: 0 0 6px;
-  font-size: 10px;
-  color: #333;
-  font-weight: 600;
-}
-
-.legend-items {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 10px;
-  color: #555;
-}
-
-.legend-color {
-  width: 16px;
-  height: 8px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
-/* === DESKTOP === */
 @media (min-width: 768px) {
-  .map-wrapper {
-    border-radius: 12px;
-  }
-
-  #map-container {
-    height: 600px;
-  }
-
-  .map-instructions {
-    top: 12px;
-    left: 12px;
-    right: auto;
-    max-width: 260px;
-    padding: 14px 16px;
-    border-radius: 10px;
-    font-size: 13px;
-  }
-
-  .area-info {
-    top: 12px;
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-    padding: 10px 18px;
-    border-radius: 24px;
-    gap: 14px;
-  }
-
-  .area-badge {
-    font-size: 14px;
-  }
-
-  .btn-clear {
-    font-size: 12px;
-    padding: 4px 12px;
-  }
-
-  .filter-controls {
-    top: 12px;
-    left: 12px;
-    right: auto;
-    bottom: auto;
-    min-width: 170px;
-    padding: 16px;
-    border-radius: 12px;
-  }
-
-  .filter-controls h4 {
-    font-size: 13px;
-    margin-bottom: 12px;
-  }
-
-  .filter-buttons {
-    flex-direction: column;
-    flex-wrap: nowrap;
-  }
-
-  .filter-btn {
-    padding: 8px 12px;
-    font-size: 13px;
-    border-radius: 8px;
-    gap: 8px;
-  }
-
-  .filter-dot {
-    width: 10px;
-    height: 10px;
-  }
-
-  .opacity-control {
-    margin-top: 12px;
-    padding-top: 12px;
-  }
-
-  .opacity-control label {
-    font-size: 11px;
-    margin-bottom: 6px;
-  }
-
-  .opacity-control input[type="range"]::-webkit-slider-thumb {
+  .opacity-slider::-webkit-slider-thumb {
     width: 16px;
     height: 16px;
-  }
-
-  .map-legend {
-    top: auto;
-    right: auto;
-    bottom: 30px;
-    left: 12px;
-    padding: 12px 14px;
-    border-radius: 10px;
-  }
-
-  .map-legend h4 {
-    font-size: 12px;
-    margin-bottom: 8px;
-  }
-
-  .legend-items {
-    gap: 4px;
-  }
-
-  .legend-item {
-    font-size: 11px;
-    gap: 8px;
-  }
-
-  .legend-color {
-    width: 20px;
-    height: 10px;
   }
 }
 </style>

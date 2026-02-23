@@ -20,6 +20,20 @@ def get_ee_tile_url(ee_image, vis_params, name):
         print(f"Não foi possível obter a URL do tile para a camada {name}: {e}")
         return None
 
+def get_ee_thumb_url(ee_image, vis_params, region, dimensions=800):
+    """Generate a static thumbnail URL for embedding in HTML reports."""
+    try:
+        thumb_params = {
+            'region': region,
+            'dimensions': dimensions,
+            'format': 'png',
+        }
+        thumb_params.update(vis_params)
+        return ee.Image(ee_image).getThumbURL(thumb_params)
+    except Exception as e:
+        print(f"Não foi possível gerar thumbnail: {e}")
+        return None
+
 def run_analysis(geojson_data: dict):
     initialize_earthengine()
     aoi = ee.Geometry(geojson_data['features'][0]['geometry'])
@@ -88,6 +102,16 @@ def run_analysis(geojson_data: dict):
         'mapbiomas_url': get_ee_tile_url(mapbiomas.updateMask(mask), config.MAPBIOMAS_VIS_PARAMS, 'MapBiomas')
     }
 
+    # Generate static thumbnail images for the downloadable report
+    thumb_urls = {
+        'rgb': get_ee_thumb_url(s2_image, {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 3000}, aoi),
+        'ndvi': get_ee_thumb_url(ndvi, config.NDVI_VIS_PARAMS, aoi),
+        'degradation': get_ee_thumb_url(classified, {
+            'min': 0, 'max': 5,
+            'palette': [config.DEGRADATION_COLORS[str(i)] for i in range(6)]
+        }, aoi),
+    }
+
     return {
         "aoi_geojson": geojson_data,
         "aoi_area_hectares": round(aoi_area_ha, 2),
@@ -96,5 +120,6 @@ def run_analysis(geojson_data: dict):
         "ndvi_stats": {k: (round(v, 4) if v is not None else None) for k, v in cleaned_stats.items()},
         "degradation_summary": summary,
         "map_layers_urls": map_layers_urls,
+        "thumbnail_urls": thumb_urls,
         "pixel_counts_for_ai": px_counts_dict
     }

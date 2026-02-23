@@ -1,91 +1,109 @@
 <template>
-  <div class="dashboard-container">
+  <div class="max-w-5xl mx-auto px-4 md:px-6">
     <!-- Welcome -->
-    <div class="welcome-section">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5 md:mb-7">
       <div>
-        <h1>Dashboard</h1>
-        <p class="welcome-text">Visao geral da sua plataforma de analise de pastagens</p>
+        <h1 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white">Dashboard</h1>
+        <p class="text-slate-400 dark:text-slate-500 text-sm mt-0.5">Visao geral da sua plataforma de analise de pastagens</p>
       </div>
-      <router-link to="/analysis/new" class="btn-new-analysis">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      <router-link
+        to="/analysis/new"
+        class="hidden md:inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all hover:-translate-y-0.5 hover:shadow-lg"
+      >
+        <span class="material-icons-round text-lg">add_chart</span>
         Nova Analise
       </router-link>
     </div>
 
     <!-- Stats Cards -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon" style="background: var(--info-bg); color: var(--info-color);">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 md:p-5 flex items-center gap-3 md:gap-4 shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:shadow-md hover:-translate-y-0.5">
+        <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-info-bg dark:bg-blue-900/30 flex items-center justify-center shrink-0">
+          <span class="material-icons-round text-info text-xl md:text-2xl">groups</span>
         </div>
-        <div class="stat-info">
-          <h3>{{ stats.clients }}</h3>
-          <p>Clientes</p>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background: var(--primary-bg); color: var(--primary-color);">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        </div>
-        <div class="stat-info">
-          <h3>{{ stats.properties }}</h3>
-          <p>Propriedades</p>
+        <div>
+          <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white leading-none">{{ stats.clients }}</h3>
+          <p class="text-slate-400 dark:text-slate-500 text-[11px] md:text-xs mt-0.5">Clientes</p>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background: var(--warning-bg); color: var(--warning-color);">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 md:p-5 flex items-center gap-3 md:gap-4 shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:shadow-md hover:-translate-y-0.5">
+        <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-primary-bg dark:bg-green-900/30 flex items-center justify-center shrink-0">
+          <span class="material-icons-round text-primary text-xl md:text-2xl">landscape</span>
         </div>
-        <div class="stat-info">
-          <h3>{{ stats.reports }}</h3>
-          <p>Analises</p>
+        <div>
+          <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white leading-none">{{ stats.properties }}</h3>
+          <p class="text-slate-400 dark:text-slate-500 text-[11px] md:text-xs mt-0.5">Propriedades</p>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background: #fce4ec; color: #c2185b;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="22" height="18" rx="2" ry="2"/><line x1="1" y1="9" x2="23" y2="9"/></svg>
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 md:p-5 flex items-center gap-3 md:gap-4 shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:shadow-md hover:-translate-y-0.5">
+        <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-warning-bg dark:bg-orange-900/30 flex items-center justify-center shrink-0">
+          <span class="material-icons-round text-warning text-xl md:text-2xl">analytics</span>
         </div>
-        <div class="stat-info">
-          <h3>{{ formatArea(stats.totalArea) }}</h3>
-          <p>Area Total (ha)</p>
+        <div>
+          <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white leading-none">{{ stats.reports }}</h3>
+          <p class="text-slate-400 dark:text-slate-500 text-[11px] md:text-xs mt-0.5">Analises</p>
+        </div>
+      </div>
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 md:p-5 flex items-center gap-3 md:gap-4 shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:shadow-md hover:-translate-y-0.5">
+        <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-pink-50 dark:bg-pink-900/30 flex items-center justify-center shrink-0">
+          <span class="material-icons-round text-pink-600 text-xl md:text-2xl">straighten</span>
+        </div>
+        <div>
+          <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white leading-none">{{ formatArea(stats.totalArea) }}</h3>
+          <p class="text-slate-400 dark:text-slate-500 text-[11px] md:text-xs mt-0.5">Area Total (ha)</p>
         </div>
       </div>
     </div>
 
     <!-- Quick Actions -->
-    <div class="quick-actions">
-      <h2>Acoes Rapidas</h2>
-      <div class="actions-grid">
-        <router-link to="/analysis/new" class="action-card action-primary">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    <div class="mb-6 md:mb-8">
+      <h2 class="text-base md:text-lg font-bold text-slate-800 dark:text-white mb-3">Acoes Rapidas</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <router-link
+          to="/analysis/new"
+          class="flex items-center md:flex-col md:items-center gap-3 md:gap-2.5 bg-primary-bg dark:bg-green-900/20 rounded-2xl p-4 md:p-5 text-primary font-medium text-sm transition-all hover:-translate-y-0.5 hover:shadow-md hover:bg-primary hover:text-white group"
+        >
+          <span class="material-icons-round text-2xl md:text-3xl group-hover:text-white">add_chart</span>
           <span>Nova Analise</span>
         </router-link>
-        <router-link to="/clients" class="action-card">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        <router-link
+          to="/clients"
+          class="flex items-center md:flex-col md:items-center gap-3 md:gap-2.5 bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-5 text-slate-600 dark:text-slate-300 font-medium text-sm shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:-translate-y-0.5 hover:shadow-md hover:text-primary hover:border-primary-bg"
+        >
+          <span class="material-icons-round text-2xl md:text-3xl opacity-60 group-hover:opacity-100">person_search</span>
           <span>Gerenciar Clientes</span>
         </router-link>
-        <router-link to="/properties" class="action-card">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <router-link
+          to="/properties"
+          class="flex items-center md:flex-col md:items-center gap-3 md:gap-2.5 bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-5 text-slate-600 dark:text-slate-300 font-medium text-sm shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:-translate-y-0.5 hover:shadow-md hover:text-primary hover:border-primary-bg"
+        >
+          <span class="material-icons-round text-2xl md:text-3xl opacity-60 group-hover:opacity-100">landscape</span>
           <span>Gerenciar Propriedades</span>
         </router-link>
       </div>
     </div>
 
     <!-- Reports Section -->
-    <div class="reports-section">
-      <div class="section-header">
-        <h2>Analises Recentes</h2>
-        <div class="filters">
-          <div class="search-wrapper">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+      <!-- Header + Filters -->
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4 md:mb-5">
+        <h2 class="text-base md:text-lg font-bold text-slate-800 dark:text-white">Analises Recentes</h2>
+        <div class="flex flex-col md:flex-row gap-2 md:gap-2.5">
+          <div class="relative">
+            <span class="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
             <input
               type="text"
               v-model="searchQuery"
               placeholder="Buscar analises..."
               @input="debouncedSearch"
+              class="w-full md:w-60 pl-10 pr-3 py-2.5 md:py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm placeholder-slate-400"
             />
           </div>
-          <select v-model="dateFilter" @change="loadReports" class="date-filter">
+          <select
+            v-model="dateFilter"
+            @change="loadReports"
+            class="w-full md:w-auto px-3 py-2.5 md:py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm"
+          >
             <option value="">Todas as datas</option>
             <option value="7">Ultimos 7 dias</option>
             <option value="30">Ultimos 30 dias</option>
@@ -94,52 +112,75 @@
         </div>
       </div>
 
-      <div v-if="loadingReports" class="loading-state">
-        <div class="spinner"></div>
-        <p>Carregando analises...</p>
+      <!-- Loading -->
+      <div v-if="loadingReports" class="flex flex-col items-center justify-center py-10 text-slate-400 dark:text-slate-500 gap-3">
+        <div class="w-8 h-8 border-3 border-slate-200 dark:border-slate-700 border-t-primary rounded-full animate-spin"></div>
+        <p class="text-sm">Carregando analises...</p>
       </div>
 
-      <div v-else-if="reports.length === 0" class="empty-state">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        <p>Nenhuma analise encontrada.</p>
-        <router-link to="/analysis/new" class="btn-primary">
+      <!-- Empty -->
+      <div v-else-if="reports.length === 0" class="flex flex-col items-center justify-center py-12 text-slate-400 dark:text-slate-500 gap-3">
+        <span class="material-icons-round text-5xl text-slate-300 dark:text-slate-600">description</span>
+        <p class="text-sm">Nenhuma analise encontrada.</p>
+        <router-link
+          to="/analysis/new"
+          class="mt-1 inline-flex items-center gap-1.5 bg-primary text-white px-5 py-2.5 rounded-xl font-medium text-sm hover:bg-primary-dark transition-colors"
+        >
           Criar primeira analise
         </router-link>
       </div>
 
-      <div v-else class="reports-list">
-        <div v-for="report in reports" :key="report.id" class="report-card">
-          <div class="report-main">
-            <div class="report-info">
-              <h3>{{ report.title || `Analise #${report.id}` }}</h3>
-              <p class="report-date">{{ formatDate(report.created_at) }}</p>
-              <div class="report-meta">
-                <span v-if="report.aoi_area_hectares" class="meta-item">
+      <!-- Reports List -->
+      <div v-else class="space-y-2.5">
+        <div
+          v-for="report in reports"
+          :key="report.id"
+          class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border border-slate-100 dark:border-slate-800 rounded-xl p-3.5 md:px-5 md:py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+        >
+          <!-- Info -->
+          <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 flex-1">
+            <div>
+              <h3 class="text-sm font-semibold text-slate-800 dark:text-white">{{ report.title || `Analise #${report.id}` }}</h3>
+              <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{{ formatDate(report.created_at) }}</p>
+              <div class="flex gap-3 mt-1">
+                <span v-if="report.aoi_area_hectares" class="text-xs text-slate-500 dark:text-slate-400">
                   <strong>Area:</strong> {{ report.aoi_area_hectares.toFixed(2) }} ha
                 </span>
-                <span v-if="report.ndvi_stats" class="meta-item">
+                <span v-if="report.ndvi_stats" class="text-xs text-slate-500 dark:text-slate-400">
                   <strong>NDVI:</strong> {{ report.ndvi_stats.mean?.toFixed(3) || 'N/A' }}
                 </span>
               </div>
             </div>
-            <div class="report-status">
-              <span
-                v-if="report.degradation_summary"
-                class="status-badge"
-                :class="getDegradationClass(report.degradation_summary)"
-              >
-                {{ getDegradationLabel(report.degradation_summary) }}
-              </span>
-            </div>
+            <span
+              v-if="report.degradation_summary"
+              :class="[
+                'self-start px-3 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap',
+                getDegradationClass(report.degradation_summary)
+              ]"
+            >
+              {{ getDegradationLabel(report.degradation_summary) }}
+            </span>
           </div>
-          <div class="report-actions">
-            <router-link :to="`/analysis/${report.id}`" class="btn-view">
+
+          <!-- Actions -->
+          <div class="flex gap-2">
+            <router-link
+              :to="`/analysis/${report.id}`"
+              class="flex-1 md:flex-none text-center px-3.5 py-2 bg-primary text-white rounded-lg text-xs font-medium hover:bg-primary-dark transition-colors"
+            >
               Ver Detalhes
             </router-link>
-            <a :href="getDownloadUrl(report.id)" class="btn-download-sm" target="_blank">
+            <a
+              :href="getDownloadUrl(report.id)"
+              target="_blank"
+              class="flex-1 md:flex-none text-center px-3.5 py-2 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg text-xs border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+            >
               Download
             </a>
-            <button class="btn-delete" @click="confirmDelete(report)">
+            <button
+              @click="confirmDelete(report)"
+              class="flex-1 md:flex-none text-center px-3.5 py-2 text-danger border border-danger/30 rounded-lg text-xs hover:bg-danger-bg dark:hover:bg-red-900/20 transition-colors cursor-pointer"
+            >
               Excluir
             </button>
           </div>
@@ -148,16 +189,29 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="modal-overlay" @click.self="closeDeleteModal">
-      <div class="modal modal-sm">
-        <h2>Confirmar Exclusao</h2>
-        <p>
+    <div
+      v-if="showDeleteModal"
+      class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end md:items-center justify-center z-[1000] p-0 md:p-5"
+      @click.self="closeDeleteModal"
+    >
+      <div class="bg-white dark:bg-slate-900 w-full md:w-[400px] md:max-w-[90%] rounded-t-2xl md:rounded-2xl p-6 md:p-7 shadow-2xl">
+        <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-3">Confirmar Exclusao</h2>
+        <p class="text-slate-500 dark:text-slate-400 text-sm">
           Tem certeza que deseja excluir a analise
-          <strong>{{ reportToDelete?.title || `#${reportToDelete?.id}` }}</strong>?
+          <strong class="text-slate-700 dark:text-slate-200">{{ reportToDelete?.title || `#${reportToDelete?.id}` }}</strong>?
         </p>
-        <div class="modal-actions">
-          <button class="btn-secondary" @click="closeDeleteModal">Cancelar</button>
-          <button class="btn-danger" @click="deleteReport" :disabled="deleting">
+        <div class="flex justify-end gap-2.5 mt-5">
+          <button
+            @click="closeDeleteModal"
+            class="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+          >
+            Cancelar
+          </button>
+          <button
+            @click="deleteReport"
+            :disabled="deleting"
+            class="px-4 py-2.5 bg-danger text-white rounded-xl text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50 cursor-pointer"
+          >
             {{ deleting ? "Excluindo..." : "Excluir" }}
           </button>
         </div>
@@ -229,9 +283,13 @@ function debouncedSearch() {
 }
 
 function formatDate(dateStr) {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString("pt-BR", {
+  let str = dateStr;
+  if (!str.endsWith('Z') && !str.includes('+') && !/\d{2}-\d{2}$/.test(str)) {
+    str += 'Z';
+  }
+  return new Date(str).toLocaleDateString("pt-BR", {
     day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit",
+    timeZone: "America/Sao_Paulo",
   });
 }
 
@@ -243,9 +301,9 @@ function formatArea(area) {
 function getDegradationClass(summary) {
   if (!summary) return "";
   const severePercent = (summary["1"]?.percentage || 0) + (summary["2"]?.percentage || 0);
-  if (severePercent > 50) return "status-severe";
-  if (severePercent > 25) return "status-moderate";
-  return "status-good";
+  if (severePercent > 50) return "bg-danger-bg dark:bg-red-900/30 text-red-700 dark:text-red-400";
+  if (severePercent > 25) return "bg-warning-bg dark:bg-orange-900/30 text-orange-700 dark:text-orange-400";
+  return "bg-primary-bg dark:bg-green-900/30 text-primary";
 }
 
 function getDegradationLabel(summary) {
@@ -287,613 +345,3 @@ onMounted(async () => {
   await Promise.all([loadStats(), loadReports()]);
 });
 </script>
-
-<style scoped>
-/* === MOBILE-FIRST: base = mobile, min-width: 768px = desktop === */
-
-.dashboard-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 16px 32px;
-}
-
-/* Welcome */
-.welcome-section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.welcome-section h1 {
-  margin: 0 0 4px;
-  font-size: 20px;
-}
-
-.welcome-text {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 13px;
-}
-
-.btn-new-analysis {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: var(--primary-color);
-  color: white;
-  padding: 12px 20px;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  font-size: 14px;
-  text-decoration: none;
-  transition: all var(--transition);
-  width: 100%;
-}
-
-.btn-new-analysis:hover {
-  background: var(--primary-dark);
-  color: white;
-}
-
-/* Stats */
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 24px;
-}
-
-.stat-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  padding: 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-light);
-  transition: all var(--transition);
-}
-
-.stat-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.stat-icon svg {
-  width: 18px;
-  height: 18px;
-}
-
-.stat-info h3 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1;
-}
-
-.stat-info p {
-  margin: 2px 0 0;
-  color: var(--text-muted);
-  font-size: 11px;
-}
-
-/* Quick Actions */
-.quick-actions {
-  margin-bottom: 24px;
-}
-
-.quick-actions h2 {
-  margin-bottom: 12px;
-  font-size: 16px;
-}
-
-.actions-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
-
-.action-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  text-align: center;
-  text-decoration: none;
-  color: var(--text-secondary);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-light);
-  transition: all var(--transition);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 12px;
-}
-
-.action-card svg {
-  opacity: 0.6;
-  flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-}
-
-.action-card span {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.action-primary {
-  background: var(--primary-bg);
-  border-color: transparent;
-  color: var(--primary-color);
-}
-
-.action-primary svg {
-  opacity: 1;
-  stroke: var(--primary-color);
-}
-
-/* Reports */
-.reports-section {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-light);
-}
-
-.section-header {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  margin-bottom: 16px;
-  gap: 10px;
-}
-
-.section-header h2 {
-  margin: 0;
-  font-size: 16px;
-}
-
-.filters {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.search-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.search-wrapper svg {
-  position: absolute;
-  left: 12px;
-}
-
-.search-wrapper input {
-  padding: 10px 12px 10px 36px;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  width: 100%;
-  font-size: 14px;
-  background: var(--bg-page);
-}
-
-.date-filter {
-  padding: 10px 12px;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  background: var(--bg-page);
-  width: 100%;
-}
-
-.loading-state {
-  text-align: center;
-  padding: 32px 16px;
-  color: var(--text-muted);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--border-color);
-  border-top-color: var(--primary-color);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.empty-state {
-  text-align: center;
-  padding: 40px 16px;
-  color: var(--text-muted);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.empty-state p {
-  margin: 0;
-}
-
-.reports-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.report-card {
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 10px;
-  transition: all var(--transition);
-}
-
-.report-card:hover {
-  background: var(--bg-page);
-  border-color: var(--border-color);
-}
-
-.report-main {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  flex: 1;
-}
-
-.report-info h3 {
-  margin: 0 0 3px;
-  font-size: 15px;
-}
-
-.report-date {
-  color: var(--text-muted);
-  font-size: 12px;
-  margin: 0 0 4px;
-}
-
-.report-meta {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.meta-item {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.status-badge {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.status-severe { background: var(--danger-bg); color: #c62828; }
-.status-moderate { background: var(--warning-bg); color: #ef6c00; }
-.status-good { background: var(--primary-bg); color: var(--primary-color); }
-
-.report-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.btn-view {
-  padding: 8px 14px;
-  background: var(--primary-color);
-  color: white;
-  border-radius: var(--radius-sm);
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: 500;
-  transition: all var(--transition);
-  flex: 1;
-  text-align: center;
-}
-
-.btn-view:hover {
-  background: var(--primary-dark);
-  color: white;
-}
-
-.btn-download-sm {
-  padding: 8px 14px;
-  background: var(--bg-page);
-  color: var(--text-secondary);
-  border-radius: var(--radius-sm);
-  text-decoration: none;
-  font-size: 12px;
-  border: 1px solid var(--border-color);
-  flex: 1;
-  text-align: center;
-}
-
-.btn-download-sm:hover {
-  background: var(--border-light);
-  color: var(--text-primary);
-}
-
-.btn-delete {
-  padding: 8px 14px;
-  background: none;
-  color: var(--danger-color);
-  border: 1px solid currentColor;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  cursor: pointer;
-  flex: 1;
-  text-align: center;
-}
-
-.btn-delete:hover {
-  background: var(--danger-bg);
-}
-
-.btn-primary {
-  display: inline-block;
-  padding: 10px 20px;
-  background: var(--primary-color);
-  color: white;
-  border-radius: var(--radius-sm);
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 14px;
-}
-
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  z-index: 1000;
-  padding: 0;
-}
-
-.modal {
-  background: white;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  padding: 24px 20px;
-  width: 100%;
-  max-height: 85vh;
-  overflow-y: auto;
-  box-shadow: var(--shadow-lg);
-}
-
-.modal h2 {
-  margin: 0 0 12px;
-  font-size: 18px;
-}
-
-.modal p {
-  color: var(--text-secondary);
-  font-size: 14px;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.btn-secondary {
-  padding: 10px 18px;
-  background: var(--bg-page);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.btn-danger {
-  padding: 10px 18px;
-  background: var(--danger-color);
-  color: white;
-  border: none;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: 14px;
-}
-
-/* === DESKTOP === */
-@media (min-width: 768px) {
-  .dashboard-container {
-    padding: 0 24px 40px;
-  }
-
-  .welcome-section {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 28px;
-  }
-
-  .welcome-section h1 {
-    font-size: 24px;
-  }
-
-  .btn-new-analysis {
-    width: auto;
-    padding: 10px 20px;
-  }
-
-  .btn-new-analysis:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.25);
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 32px;
-  }
-
-  .stat-card {
-    padding: 20px;
-    gap: 16px;
-  }
-
-  .stat-card:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
-  }
-
-  .stat-icon {
-    width: 48px;
-    height: 48px;
-  }
-
-  .stat-icon svg {
-    width: 22px;
-    height: 22px;
-  }
-
-  .stat-info h3 {
-    font-size: 26px;
-  }
-
-  .stat-info p {
-    font-size: 13px;
-  }
-
-  .quick-actions h2 {
-    font-size: 18px;
-  }
-
-  .actions-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
-
-  .action-card {
-    flex-direction: column;
-    padding: 20px;
-    gap: 10px;
-  }
-
-  .action-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
-    color: var(--primary-color);
-    border-color: var(--primary-bg);
-  }
-
-  .action-card:hover svg {
-    opacity: 1;
-    stroke: var(--primary-color);
-  }
-
-  .action-primary:hover {
-    background: var(--primary-color);
-    color: white;
-  }
-
-  .action-primary:hover svg {
-    stroke: white;
-  }
-
-  .reports-section {
-    padding: 24px;
-  }
-
-  .section-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-
-  .section-header h2 {
-    font-size: 18px;
-  }
-
-  .filters {
-    flex-direction: row;
-    gap: 10px;
-  }
-
-  .search-wrapper input {
-    width: 240px;
-    font-size: 13px;
-    padding: 9px 12px 9px 36px;
-  }
-
-  .date-filter {
-    width: auto;
-    font-size: 13px;
-    padding: 9px 12px;
-  }
-
-  .report-card {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 20px;
-  }
-
-  .report-main {
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
-  }
-
-  .report-actions {
-    flex-wrap: nowrap;
-  }
-
-  .btn-view, .btn-download-sm, .btn-delete {
-    flex: none;
-    padding: 7px 14px;
-  }
-
-  .modal-overlay {
-    align-items: center;
-    padding: 20px;
-  }
-
-  .modal {
-    border-radius: var(--radius-lg);
-    padding: 28px;
-    width: 400px;
-    max-width: 90%;
-    max-height: 90vh;
-  }
-
-  .btn-secondary, .btn-danger {
-    font-size: 13px;
-    padding: 9px 18px;
-  }
-}
-</style>

@@ -1,78 +1,198 @@
 <template>
-  <div class="page-container">
+  <div class="max-w-5xl mx-auto px-4 md:px-6">
     <!-- Loading state -->
-    <div v-if="loading" class="loading-state">
-      <div class="spinner-lg"></div>
-      <p>Carregando relatorio...</p>
+    <div v-if="loading" class="flex flex-col items-center justify-center min-h-[300px] md:min-h-[400px] gap-4 text-slate-400 dark:text-slate-500">
+      <div class="w-9 h-9 md:w-10 md:h-10 border-3 border-slate-200 dark:border-slate-700 border-t-primary rounded-full animate-spin"></div>
+      <p class="text-sm">Carregando relatorio...</p>
     </div>
 
     <!-- Error state -->
-    <div v-if="error" class="error-state">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-      <p>{{ error }}</p>
-      <router-link to="/" class="btn-back">Voltar ao Dashboard</router-link>
+    <div v-if="error" class="flex flex-col items-center justify-center min-h-[300px] md:min-h-[400px] gap-4 text-slate-400 dark:text-slate-500">
+      <span class="material-icons-round text-5xl text-slate-300 dark:text-slate-600">error_outline</span>
+      <p class="text-sm">{{ error }}</p>
+      <router-link to="/" class="bg-primary text-white px-5 py-2.5 rounded-xl font-medium text-sm hover:bg-primary-dark transition-colors">
+        Voltar ao Dashboard
+      </router-link>
     </div>
 
     <!-- Report content -->
-    <div v-if="reportData && !loading" class="report-content">
+    <div v-if="reportData && !loading" class="analysis-content">
+      <!-- Print-only header (hidden on screen, visible on print) -->
+      <div class="print-only-header">
+        <div class="print-header-top">
+          <div class="print-logo">&#x1F33F; CULTIVEAI</div>
+          <div class="print-header-title">Relatório de Análise de Pastagem</div>
+        </div>
+        <div class="print-header-meta">
+          <span>Data: {{ formatDate(reportData.created_at) }}</span>
+          <span v-if="reportData.property_name">Propriedade: {{ reportData.property_name }}</span>
+          <span>Análise automatizada por sensoriamento remoto e IA</span>
+        </div>
+      </div>
+
       <!-- Header -->
-      <div class="report-header">
-        <div class="header-info">
-          <h1>Relatorio de Analise</h1>
-          <p class="report-date">
+      <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3 md:gap-4 mb-5 md:mb-6 pb-4 md:pb-5 border-b border-slate-100 dark:border-slate-800 print-compact-header">
+        <div>
+          <h1 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white mb-1.5">Relatorio de Analise de Pastagem</h1>
+          <p class="text-slate-400 dark:text-slate-500 text-sm flex items-center gap-2 flex-wrap">
+            <span class="material-icons-round text-base">calendar_today</span>
             {{ formatDate(reportData.created_at) }}
-            <span v-if="reportData.property_name" class="property-badge">
+            <span v-if="reportData.property_name" class="bg-info-bg dark:bg-blue-900/30 text-info px-2.5 py-0.5 rounded-full text-xs font-medium">
               {{ reportData.property_name }}
             </span>
           </p>
         </div>
-        <div class="header-actions">
-          <a :href="downloadUrl" download class="btn-download">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Baixar
-          </a>
-          <router-link to="/analysis/new" class="btn-secondary">Nova Analise</router-link>
+        <div class="flex flex-col md:flex-row gap-2 w-full md:w-auto print-hide">
+          <button
+            @click="downloadPDF"
+            :disabled="generatingPdf"
+            class="inline-flex items-center justify-center gap-1.5 bg-primary hover:bg-primary-dark text-white px-4 py-2.5 rounded-xl font-medium text-sm transition-all hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60 disabled:pointer-events-none"
+          >
+            <span v-if="generatingPdf" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+            <span v-else class="material-icons-round text-base">picture_as_pdf</span>
+            {{ generatingPdf ? 'Gerando PDF...' : 'Baixar PDF' }}
+          </button>
+          <button
+            @click="printPage"
+            class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+          >
+            <span class="material-icons-round text-base">print</span>
+            Imprimir
+          </button>
+          <button
+            @click="saveScreenshot"
+            :disabled="generatingScreenshot"
+            class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors disabled:opacity-60"
+          >
+            <span v-if="generatingScreenshot" class="w-4 h-4 border-2 border-slate-400/30 border-t-slate-400 rounded-full animate-spin"></span>
+            <span v-else class="material-icons-round text-base">image</span>
+            {{ generatingScreenshot ? 'Salvando...' : 'Salvar Imagem' }}
+          </button>
         </div>
       </div>
 
-      <!-- Stats cards -->
-      <div class="stats-cards">
-        <div class="stat-card">
-          <div class="stat-icon" style="background: var(--primary-bg); color: var(--primary-color);">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="22" height="18" rx="2" ry="2"/><line x1="1" y1="9" x2="23" y2="9"/></svg>
+      <!-- Summary Grid (Period, Area, Satellite, Cloud) -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 md:gap-4 mb-5 md:mb-7">
+        <div class="bg-primary-bg dark:bg-green-900/20 rounded-2xl p-3.5 md:p-4">
+          <p class="text-[11px] md:text-xs text-primary-dark dark:text-green-400 font-medium mb-1">Periodo Analisado</p>
+          <p class="text-sm md:text-[15px] font-semibold text-slate-800 dark:text-white leading-snug">
+            {{ reportData.analysis_period?.start_date || 'N/A' }}<br>a {{ reportData.analysis_period?.end_date || 'N/A' }}
+          </p>
+        </div>
+        <div class="bg-primary-bg dark:bg-green-900/20 rounded-2xl p-3.5 md:p-4">
+          <p class="text-[11px] md:text-xs text-primary-dark dark:text-green-400 font-medium mb-1">Area Total</p>
+          <p class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white leading-none">{{ reportData.aoi_area_hectares?.toFixed(2) || '0' }}</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">hectares</p>
+        </div>
+        <div class="bg-primary-bg dark:bg-green-900/20 rounded-2xl p-3.5 md:p-4">
+          <p class="text-[11px] md:text-xs text-primary-dark dark:text-green-400 font-medium mb-1">Imagem de Satelite</p>
+          <p class="text-xs md:text-sm font-medium text-slate-700 dark:text-slate-200 break-all leading-snug">
+            {{ reportData.satellite_image_info?.id?.split('_').pop() || 'N/A' }}
+          </p>
+        </div>
+        <div class="bg-primary-bg dark:bg-green-900/20 rounded-2xl p-3.5 md:p-4">
+          <p class="text-[11px] md:text-xs text-primary-dark dark:text-green-400 font-medium mb-1">Cobertura de Nuvens</p>
+          <p class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white leading-none">
+            {{ reportData.satellite_image_info?.cloud_percentage != null ? reportData.satellite_image_info.cloud_percentage.toFixed(2) : 'N/A' }}<span class="text-sm font-medium">%</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- NDVI + Health Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 md:gap-4 mb-5 md:mb-7">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 md:p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/30 flex items-center justify-center">
+              <span class="material-icons-round text-red-500 text-base">trending_down</span>
+            </div>
+            <span class="text-[11px] text-slate-400 dark:text-slate-500">NDVI Min</span>
           </div>
-          <div class="stat-content">
-            <span class="stat-value">{{ reportData.aoi_area_hectares?.toFixed(2) || '0' }}</span>
-            <span class="stat-label">Hectares</span>
+          <span class="text-lg md:text-xl font-bold text-slate-800 dark:text-white">{{ reportData.ndvi_stats?.min?.toFixed(3) || 'N/A' }}</span>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 md:p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center">
+              <span class="material-icons-round text-amber-500 text-base">remove</span>
+            </div>
+            <span class="text-[11px] text-slate-400 dark:text-slate-500">NDVI Medio</span>
+          </div>
+          <span class="text-lg md:text-xl font-bold text-slate-800 dark:text-white">{{ reportData.ndvi_stats?.mean?.toFixed(3) || 'N/A' }}</span>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 md:p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="w-8 h-8 rounded-lg bg-green-50 dark:bg-green-900/30 flex items-center justify-center">
+              <span class="material-icons-round text-green-500 text-base">trending_up</span>
+            </div>
+            <span class="text-[11px] text-slate-400 dark:text-slate-500">NDVI Max</span>
+          </div>
+          <span class="text-lg md:text-xl font-bold text-slate-800 dark:text-white">{{ reportData.ndvi_stats?.max?.toFixed(3) || 'N/A' }}</span>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 md:p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-2 mb-2">
+            <div :class="['w-8 h-8 rounded-lg flex items-center justify-center', getHealthIconClass(reportData.ndvi_stats?.mean)]">
+              <span class="material-icons-round text-base">monitor_heart</span>
+            </div>
+            <span class="text-[11px] text-slate-400 dark:text-slate-500">Saude Geral</span>
+          </div>
+          <span :class="['text-lg md:text-xl font-bold', getHealthTextClass(reportData.ndvi_stats?.mean)]">
+            {{ getHealthLabel(reportData.ndvi_stats?.mean) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Degradation Distribution -->
+      <div v-if="reportData.degradation_summary && reportData.degradation_summary.length > 0" class="bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-6 mb-5 md:mb-7 shadow-sm border border-slate-100 dark:border-slate-800">
+        <h2 class="text-base md:text-lg font-bold text-slate-800 dark:text-white mb-4">Distribuicao da Saude da Pastagem</h2>
+
+        <!-- Visual bars -->
+        <div class="space-y-3 mb-5">
+          <div v-for="item in degradationItems" :key="item.label" class="flex items-center gap-3">
+            <div class="w-3 h-3 rounded-full shrink-0" :style="{ background: item.color }"></div>
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-baseline mb-1">
+                <span class="text-sm font-medium text-slate-700 dark:text-slate-200">{{ item.label }}</span>
+                <span class="text-xs text-slate-400 dark:text-slate-500">{{ item.percentage.toFixed(1) }}% ({{ item.area.toFixed(2) }} ha)</span>
+              </div>
+              <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all duration-500" :style="{ width: item.percentage + '%', background: item.color }"></div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background: #e8f5e9; color: #2e7d32;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/></svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-value">{{ reportData.ndvi_stats?.mean?.toFixed(3) || 'N/A' }}</span>
-            <span class="stat-label">NDVI Medio</span>
-          </div>
-        </div>
-        <div class="stat-card" :class="getHealthClass(reportData.ndvi_stats?.mean)">
-          <div class="stat-icon health-icon-bg">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-value">{{ getHealthLabel(reportData.ndvi_stats?.mean) }}</span>
-            <span class="stat-label">Saude da Vegetacao</span>
-          </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto -mx-4 md:mx-0">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-slate-200 dark:border-slate-700">
+                <th class="text-left py-2.5 px-4 md:px-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Classe</th>
+                <th class="text-right py-2.5 px-4 md:px-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">%</th>
+                <th class="text-right py-2.5 px-4 md:px-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Area (ha)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in degradationItems" :key="'t-' + item.label" class="border-b border-slate-100 dark:border-slate-800 last:border-0">
+                <td class="py-2.5 px-4 md:px-3 text-slate-700 dark:text-slate-200 font-medium">
+                  <span class="inline-flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="{ background: item.color }"></span>
+                    {{ item.label }}
+                  </span>
+                </td>
+                <td class="py-2.5 px-4 md:px-3 text-right text-slate-600 dark:text-slate-300 tabular-nums">{{ item.percentage.toFixed(2) }}%</td>
+                <td class="py-2.5 px-4 md:px-3 text-right text-slate-600 dark:text-slate-300 tabular-nums">{{ item.area.toFixed(2) }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
       <!-- Map Section -->
-      <div class="map-section">
-        <div class="section-title">
-          <h2>Mapa da Area Analisada</h2>
-          <p>Use as camadas a esquerda para visualizar diferentes indices</p>
+      <div class="mb-5 md:mb-7">
+        <div class="mb-2.5">
+          <h2 class="text-base md:text-lg font-bold text-slate-800 dark:text-white">Mapa da Area Analisada</h2>
+          <p class="text-slate-400 dark:text-slate-500 text-xs md:text-[13px] mt-0.5">Use as camadas para visualizar diferentes indices</p>
         </div>
-        <div class="map-container-highlight">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-md border-2 border-primary">
           <MapComponent
             :layers="reportData.map_layers_urls"
             :aoi="reportData.aoi_geojson"
@@ -82,21 +202,46 @@
       </div>
 
       <!-- AI Report -->
-      <div class="ai-report-section">
-        <div class="section-title">
-          <h2>Diagnostico Tecnico</h2>
-          <p>Relatorio gerado por inteligencia artificial</p>
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-7 mb-5 md:mb-7 shadow-sm border border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-2.5 mb-3.5 md:mb-5 pb-3 md:pb-4 border-b border-slate-100 dark:border-slate-800">
+          <div class="w-9 h-9 rounded-xl bg-primary-bg dark:bg-green-900/30 flex items-center justify-center shrink-0">
+            <span class="material-icons-round text-primary text-lg">smart_toy</span>
+          </div>
+          <div>
+            <h2 class="text-base md:text-lg font-bold text-slate-800 dark:text-white">Diagnostico por Inteligencia Artificial</h2>
+            <p class="text-slate-400 dark:text-slate-500 text-xs md:text-[13px]">Analise detalhada gerada automaticamente pelo CultiveAI</p>
+          </div>
         </div>
-        <div class="ai-report-body" v-html="renderMarkdown(reportData.ai_description)"></div>
+        <div class="ai-report-body leading-relaxed text-slate-600 dark:text-slate-300 text-sm" v-html="renderMarkdown(reportData.ai_description)"></div>
       </div>
 
       <!-- Final actions -->
-      <div class="final-actions">
-        <a :href="downloadUrl" download class="btn-primary-lg">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Baixar Relatorio Completo
-        </a>
-        <router-link to="/analysis/new" class="btn-secondary-lg">Realizar Nova Analise</router-link>
+      <div class="flex flex-col md:flex-row md:justify-center gap-2.5 md:gap-3.5 py-5 md:py-7 border-t border-slate-100 dark:border-slate-800 print-hide">
+        <button
+          @click="downloadPDF"
+          :disabled="generatingPdf"
+          class="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-3.5 rounded-xl font-semibold text-[15px] transition-all hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60 disabled:pointer-events-none"
+        >
+          <span v-if="generatingPdf" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          <span v-else class="material-icons-round text-lg">picture_as_pdf</span>
+          {{ generatingPdf ? 'Gerando PDF...' : 'Baixar Relatorio PDF' }}
+        </button>
+        <router-link
+          to="/analysis/new"
+          class="text-center px-6 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl text-[15px] font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+        >
+          Realizar Nova Analise
+        </router-link>
+      </div>
+
+      <!-- Print-only footer -->
+      <div class="print-only-footer">
+        <p>Relatório gerado pela plataforma <strong>CultiveAI</strong> — Dados: Sentinel-2 (Copernicus/ESA) | Google Earth Engine | IA</p>
+      </div>
+
+      <!-- Hidden PDF render container (off-screen) -->
+      <div class="pdf-offscreen">
+        <ReportPDF v-if="reportData" :data="reportData" />
       </div>
     </div>
   </div>
@@ -106,7 +251,9 @@
 import { ref, onMounted, computed } from "vue";
 import ApiService from "@/services/ApiService";
 import MapComponent from "@/components/MapComponent.vue";
+import ReportPDF from "@/components/ReportPDF.vue";
 import { marked } from "marked";
+import html2canvas from "html2canvas";
 
 const props = defineProps({
   id: { type: [String, Number], required: true },
@@ -115,25 +262,63 @@ const props = defineProps({
 const reportData = ref(null);
 const loading = ref(true);
 const error = ref(null);
+const generatingPdf = ref(false);
+const generatingScreenshot = ref(false);
 
-const downloadUrl = computed(() => {
-  return reportData.value ? ApiService.downloadReportUrl(reportData.value.id) : "#";
+const degradationColors = {
+  "Degradação Severa": "#a50026",
+  "Degradação Moderada": "#d73027",
+  "Pastagem Estressada": "#fdae61",
+  "Pastagem Boa": "#66bd63",
+  "Pastagem Excelente": "#1a9641",
+  "Não Classificado": "#CCCCCC",
+  // Fallbacks without accents
+  "Degradacao Severa": "#a50026",
+  "Degradacao Moderada": "#d73027",
+};
+
+const degradationItems = computed(() => {
+  if (!reportData.value?.degradation_summary) return [];
+  const summary = reportData.value.degradation_summary;
+  if (!Array.isArray(summary)) return [];
+
+  return summary.map((item) => ({
+    label: item.class_name || "Desconhecida",
+    percentage: item.percentage || 0,
+    area: item.area_hectares || 0,
+    color: degradationColors[item.class_name] || "#999",
+  })).sort((a, b) => b.percentage - a.percentage);
 });
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
-  return new Date(dateStr).toLocaleDateString('pt-BR', {
+  // Backend stores UTC but may omit 'Z' suffix - ensure proper parsing
+  let str = dateStr;
+  if (!str.endsWith('Z') && !str.includes('+') && !/\d{2}-\d{2}$/.test(str)) {
+    str += 'Z';
+  }
+  return new Date(str).toLocaleDateString('pt-BR', {
     day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
+    timeZone: 'America/Sao_Paulo',
   });
 }
 
-function getHealthClass(ndviMean) {
-  if (!ndviMean) return '';
-  if (ndviMean >= 0.5) return 'health-excellent';
-  if (ndviMean >= 0.4) return 'health-good';
-  if (ndviMean >= 0.3) return 'health-moderate';
-  if (ndviMean >= 0.2) return 'health-stressed';
-  return 'health-degraded';
+function getHealthIconClass(ndviMean) {
+  if (!ndviMean) return 'bg-slate-100 dark:bg-slate-800 text-slate-400';
+  if (ndviMean >= 0.5) return 'bg-green-50 dark:bg-green-900/30 text-green-600';
+  if (ndviMean >= 0.4) return 'bg-green-50 dark:bg-green-900/30 text-green-500';
+  if (ndviMean >= 0.3) return 'bg-amber-50 dark:bg-amber-900/30 text-amber-600';
+  if (ndviMean >= 0.2) return 'bg-orange-50 dark:bg-orange-900/30 text-orange-500';
+  return 'bg-red-50 dark:bg-red-900/30 text-red-600';
+}
+
+function getHealthTextClass(ndviMean) {
+  if (!ndviMean) return 'text-slate-400';
+  if (ndviMean >= 0.5) return 'text-green-600 dark:text-green-400';
+  if (ndviMean >= 0.4) return 'text-green-500 dark:text-green-400';
+  if (ndviMean >= 0.3) return 'text-amber-600 dark:text-amber-400';
+  if (ndviMean >= 0.2) return 'text-orange-500 dark:text-orange-400';
+  return 'text-red-600 dark:text-red-400';
 }
 
 function getHealthLabel(ndviMean) {
@@ -150,6 +335,65 @@ function renderMarkdown(text) {
   return marked(text);
 }
 
+async function downloadPDF() {
+  generatingPdf.value = true;
+  try {
+    const html2pdf = (await import("html2pdf.js")).default;
+    const element = document.getElementById("report-pdf-content");
+    if (!element) return;
+
+    const opt = {
+      margin: [8, 6, 8, 6],
+      filename: `relatorio_cultiveai_${props.id}.pdf`,
+      image: { type: "jpeg", quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+    };
+
+    await html2pdf().set(opt).from(element).save();
+  } catch (err) {
+    console.error("Erro ao gerar PDF:", err);
+  } finally {
+    generatingPdf.value = false;
+  }
+}
+
+function printPage() {
+  window.print();
+}
+
+async function saveScreenshot() {
+  generatingScreenshot.value = true;
+  try {
+    const element = document.querySelector(".analysis-content");
+    if (!element) {
+      console.error("Elemento .analysis-content nao encontrado");
+      return;
+    }
+
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      logging: false,
+      backgroundColor: "#ffffff",
+    });
+
+    const link = document.createElement("a");
+    link.download = `analise_cultiveai_${props.id}.png`;
+    link.href = canvas.toDataURL("image/png");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (err) {
+    console.error("Erro ao gerar screenshot:", err);
+    alert("Erro ao salvar imagem. Tente novamente.");
+  } finally {
+    generatingScreenshot.value = false;
+  }
+}
+
 onMounted(async () => {
   try {
     const response = await ApiService.getAnalysisReport(props.id);
@@ -164,251 +408,49 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* === MOBILE-FIRST === */
+/* ===== Screen styles ===== */
 
-.page-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 16px 32px;
+/* Hidden on screen, shown on print */
+.print-only-header,
+.print-only-footer {
+  display: none;
 }
 
-/* Loading / Error */
-.loading-state, .error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 300px;
-  gap: 16px;
-  color: var(--text-muted);
+/* PDF off-screen container */
+.pdf-offscreen {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  z-index: -1;
 }
 
-.spinner-lg {
-  width: 36px;
-  height: 36px;
-  border: 3px solid var(--border-color);
-  border-top-color: var(--primary-color);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.btn-back {
-  display: inline-block;
-  background: var(--primary-color);
-  color: white;
-  padding: 10px 20px;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
-}
-
-/* Header */
-.report-header {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border-light);
-}
-
-.header-info h1 {
-  margin: 0 0 6px;
-  font-size: 20px;
-}
-
-.report-date {
-  color: var(--text-muted);
-  font-size: 13px;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.property-badge {
-  background: var(--info-bg);
-  color: var(--info-color);
-  padding: 3px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.header-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-}
-
-.btn-download {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  background: var(--primary-color);
-  color: white;
-  padding: 12px 18px;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
-  font-size: 14px;
-  transition: all var(--transition);
-}
-
-.btn-download:hover {
-  background: var(--primary-dark);
-  color: white;
-}
-
-.btn-secondary {
-  background: var(--bg-page);
-  color: var(--text-secondary);
-  padding: 12px 18px;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
-  font-size: 14px;
-  border: 1px solid var(--border-color);
-  text-align: center;
-}
-
-.btn-secondary:hover {
-  background: var(--border-light);
-  color: var(--text-primary);
-}
-
-/* Stats */
-.stats-cards {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.stat-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  padding: 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-light);
-}
-
-.stat-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.stat-icon svg {
-  width: 20px;
-  height: 20px;
-}
-
-.stat-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-value {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 3px;
-}
-
-/* Health classes */
-.health-excellent .stat-value { color: #1a9850; }
-.health-excellent .health-icon-bg { background: #e8f5e9; color: #1a9850; }
-.health-good .stat-value { color: #66bd63; }
-.health-good .health-icon-bg { background: #e8f5e9; color: #66bd63; }
-.health-moderate .stat-value { color: #d4a017; }
-.health-moderate .health-icon-bg { background: #fff8e1; color: #d4a017; }
-.health-stressed .stat-value { color: #fc8d59; }
-.health-stressed .health-icon-bg { background: #fff3e0; color: #fc8d59; }
-.health-degraded .stat-value { color: #d73027; }
-.health-degraded .health-icon-bg { background: #ffebee; color: #d73027; }
-
-/* Map Section */
-.map-section {
-  margin-bottom: 20px;
-}
-
-.section-title {
-  margin-bottom: 10px;
-}
-
-.section-title h2 {
-  margin: 0 0 4px;
-  font-size: 16px;
-}
-
-.section-title p {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 12px;
-}
-
-.map-container-highlight {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
-  border: 2px solid var(--primary-color);
-}
-
-.map-container-highlight :deep(#map-container) {
-  height: 350px;
-}
-
-/* AI Report */
-.ai-report-section {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  margin-bottom: 20px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-light);
-}
-
-.ai-report-section .section-title {
-  margin-bottom: 14px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-light);
-}
-
-.ai-report-body {
-  line-height: 1.7;
-  color: var(--text-secondary);
-  font-size: 14px;
-}
-
+/* Markdown rendered content - needs :deep() for v-html */
 .ai-report-body :deep(h2) {
-  color: var(--primary-color);
+  color: var(--color-primary);
   font-size: 16px;
+  font-weight: 700;
   margin-top: 20px;
   margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .ai-report-body :deep(h3) {
-  color: var(--text-primary);
   font-size: 14px;
+  font-weight: 600;
   margin-top: 16px;
   margin-bottom: 4px;
+}
+
+.ai-report-body :deep(h4) {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+
+.ai-report-body :deep(p) {
+  margin: 6px 0;
 }
 
 .ai-report-body :deep(ul),
@@ -434,179 +476,51 @@ onMounted(async () => {
 .ai-report-body :deep(th),
 .ai-report-body :deep(td) {
   padding: 8px 10px;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e2e8f0;
   text-align: left;
   white-space: nowrap;
 }
 
 .ai-report-body :deep(th) {
-  background: var(--bg-page);
+  background: #f0fdf4;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--color-primary-dark);
+}
+
+:where(.dark) .ai-report-body :deep(h2) {
+  border-bottom-color: #334155;
+}
+
+:where(.dark) .ai-report-body :deep(th) {
+  background: #1e293b;
+  color: #86efac;
+}
+
+:where(.dark) .ai-report-body :deep(th),
+:where(.dark) .ai-report-body :deep(td) {
+  border-color: #334155;
 }
 
 .ai-report-body :deep(strong) {
-  color: var(--text-primary);
+  font-weight: 600;
 }
 
 .ai-report-body :deep(hr) {
   border: none;
-  border-top: 1px solid var(--border-light);
+  border-top: 1px solid #e2e8f0;
   margin: 20px 0;
 }
 
-/* Final Actions */
-.final-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 20px 0;
-  border-top: 1px solid var(--border-light);
+:where(.dark) .ai-report-body :deep(hr) {
+  border-top-color: #334155;
 }
 
-.btn-primary-lg {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: var(--primary-color);
-  color: white;
-  padding: 14px 20px;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  font-size: 15px;
-  transition: all var(--transition);
+.ai-report-body :deep(em) {
+  color: #94a3b8;
+  font-size: 0.9em;
 }
 
-.btn-primary-lg:hover {
-  background: var(--primary-dark);
-  color: white;
-}
-
-.btn-secondary-lg {
-  background: var(--bg-page);
-  color: var(--text-secondary);
-  padding: 14px 20px;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
-  font-size: 15px;
-  border: 1px solid var(--border-color);
-  text-align: center;
-}
-
-.btn-secondary-lg:hover {
-  background: var(--border-light);
-  color: var(--text-primary);
-}
-
-/* === DESKTOP === */
 @media (min-width: 768px) {
-  .page-container {
-    padding: 0 24px 40px;
-  }
-
-  .loading-state, .error-state {
-    min-height: 400px;
-  }
-
-  .spinner-lg {
-    width: 40px;
-    height: 40px;
-  }
-
-  .report-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 24px;
-    padding-bottom: 20px;
-    gap: 16px;
-  }
-
-  .header-info h1 {
-    font-size: 24px;
-  }
-
-  .report-date {
-    font-size: 14px;
-  }
-
-  .header-actions {
-    flex-direction: row;
-    width: auto;
-    gap: 10px;
-  }
-
-  .btn-download {
-    font-size: 13px;
-    padding: 10px 18px;
-  }
-
-  .btn-download:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.25);
-  }
-
-  .btn-secondary {
-    font-size: 13px;
-    padding: 10px 18px;
-  }
-
-  .stats-cards {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-bottom: 28px;
-  }
-
-  .stat-card {
-    padding: 20px;
-    gap: 14px;
-  }
-
-  .stat-icon {
-    width: 48px;
-    height: 48px;
-  }
-
-  .stat-icon svg {
-    width: 22px;
-    height: 22px;
-  }
-
-  .stat-value {
-    font-size: 22px;
-  }
-
-  .stat-label {
-    font-size: 12px;
-  }
-
-  .map-section {
-    margin-bottom: 28px;
-  }
-
-  .section-title h2 {
-    font-size: 18px;
-  }
-
-  .section-title p {
-    font-size: 13px;
-  }
-
-  .map-container-highlight :deep(#map-container) {
-    height: 600px;
-  }
-
-  .ai-report-section {
-    padding: 28px;
-    margin-bottom: 28px;
-  }
-
-  .ai-report-section .section-title {
-    margin-bottom: 20px;
-    padding-bottom: 16px;
-  }
-
   .ai-report-body :deep(h2) {
     font-size: 17px;
     margin-top: 24px;
@@ -634,25 +548,136 @@ onMounted(async () => {
     padding: 10px 14px;
     white-space: normal;
   }
+}
 
-  .final-actions {
-    flex-direction: row;
-    justify-content: center;
-    gap: 14px;
-    padding: 28px 0;
+/* ===== Print styles ===== */
+@media print {
+  /* Show print-only elements */
+  .print-only-header {
+    display: block !important;
+    margin-bottom: 16px;
+  }
+  .print-only-footer {
+    display: block !important;
+    margin-top: 24px;
+    padding-top: 12px;
+    border-top: 2px solid #d1fae5;
+    text-align: center;
+    font-size: 10px;
+    color: #94a3b8;
+  }
+  .print-only-footer strong {
+    color: #2D6A4F;
   }
 
-  .btn-primary-lg {
-    padding: 14px 28px;
+  /* Print header styling */
+  .print-header-top {
+    background: linear-gradient(135deg, #2D6A4F, #40916C) !important;
+    color: white !important;
+    padding: 20px 24px !important;
+    border-radius: 10px !important;
+    margin-bottom: 8px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .print-logo {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    opacity: 0.85;
+    margin-bottom: 6px;
+  }
+  .print-header-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: white !important;
+  }
+  .print-header-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 11px;
+    color: #475569;
+    padding: 8px 4px;
+    border-bottom: 2px solid #d1fae5;
+    margin-bottom: 4px;
+  }
+  .print-header-meta span {
+    color: #475569 !important;
   }
 
-  .btn-primary-lg:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+  /* Hide the on-screen header (date/buttons row) */
+  .print-compact-header {
+    display: none !important;
   }
 
-  .btn-secondary-lg {
-    padding: 14px 28px;
+  /* Hide PDF off-screen container */
+  .pdf-offscreen {
+    display: none !important;
+  }
+
+  /* Force light colors */
+  .analysis-content {
+    color: #1e293b !important;
+    background: white !important;
+  }
+
+  .analysis-content * {
+    color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Force card backgrounds */
+  .analysis-content :deep(.bg-primary-bg),
+  .analysis-content :deep([class*="bg-primary-bg"]) {
+    background-color: #E8F5E9 !important;
+  }
+  .analysis-content :deep(.bg-white),
+  .analysis-content :deep([class*="bg-white"]) {
+    background-color: white !important;
+  }
+
+  /* Better spacing for print */
+  .analysis-content > div {
+    margin-bottom: 12px !important;
+  }
+
+  /* Page breaks */
+  .analysis-content > div {
+    page-break-inside: avoid;
+  }
+
+  /* Remove shadows */
+  .analysis-content :deep(.shadow-sm),
+  .analysis-content :deep(.shadow-md) {
+    box-shadow: none !important;
+  }
+
+  /* Ensure dark mode text is readable */
+  .analysis-content :deep([class*="dark:"]) {
+    color: #1e293b !important;
+  }
+  .analysis-content :deep([class*="text-slate-"]) {
+    color: #334155 !important;
+  }
+  .analysis-content :deep([class*="text-white"]) {
+    color: #1e293b !important;
+  }
+
+  /* AI report print */
+  .ai-report-body :deep(h2) {
+    color: #2D6A4F !important;
+    border-bottom-color: #d1fae5 !important;
+  }
+  .ai-report-body :deep(th) {
+    background: #f0fdf4 !important;
+    color: #1B4332 !important;
+    border-color: #e2e8f0 !important;
+  }
+  .ai-report-body :deep(td) {
+    border-color: #e2e8f0 !important;
+    color: #334155 !important;
   }
 }
 </style>

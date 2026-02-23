@@ -9,5 +9,6 @@ alembic
 python-jose[cryptography]
 passlib[bcrypt]
 jinja2
+markdown
 email-validator
 python-multipart

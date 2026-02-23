@@ -28,7 +28,9 @@ def create_analysis(
 
         html_report = report_service.generate_html_report(gee_results)
         gee_results['report_html'] = html_report
-        
+        # Remove thumbnail_urls - only needed for the HTML report, not stored in DB
+        gee_results.pop('thumbnail_urls', None)
+
         db_report = crud.crud_analysis.create_analysis_report(
             db=db, 
             report_data=gee_results,
@@ -70,7 +72,7 @@ def download_report(
     token: Optional[str] = Query(None),
     db: Session = Depends(deps.get_db)
 ):
-    """Download report HTML. Accepts token via query parameter for direct download links."""
+    """Download report HTML. Regenerates HTML from stored analysis data so template updates are always reflected."""
     if not token:
         raise HTTPException(status_code=401, detail="Token required")
 
@@ -89,7 +91,26 @@ def download_report(
     if report.owner_id != user.id:
         raise HTTPException(status_code=403, detail="Não autorizado")
 
-    return Response(content=report.report_html, media_type="text/html", headers={
+    # Build analysis_data dict from stored DB columns for dynamic HTML generation
+    analysis_data = {
+        'aoi_geojson': report.aoi_geojson,
+        'aoi_area_hectares': report.aoi_area_hectares or 0,
+        'analysis_period': report.analysis_period or {},
+        'satellite_image_info': report.satellite_image_info or {},
+        'ndvi_stats': report.ndvi_stats or {},
+        'degradation_summary': report.degradation_summary or [],
+        'ai_description': report.ai_description or '',
+        'map_layers_urls': report.map_layers_urls or {},
+        'created_at': report.created_at,
+    }
+
+    # Add property name if linked
+    if report.property_id and report.property:
+        analysis_data['property_name'] = report.property.name
+
+    html_content = report_service.generate_html_report(analysis_data)
+
+    return Response(content=html_content, media_type="text/html", headers={
         "Content-Disposition": f"attachment; filename=relatorio_cultiveai_{report_id}.html"
     })
 
