@@ -1,3 +1,3 @@
 # cultiveai-backend/app/crud/__init__.py
 
-from . import crud_user, crud_analysis
+from . import crud_user, crud_analysis, crud_client, crud_property

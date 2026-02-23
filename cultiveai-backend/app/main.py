@@ -1,9 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .core.config import PROJECT_NAME, API_V1_STR
-from .api.endpoints import auth, analysis
+from .api.endpoints import auth, analysis, clients, properties
 
-app = FastAPI(title=PROJECT_NAME)
+app = FastAPI(
+    title=PROJECT_NAME,
+    description="API para análise de pastagens degradadas usando NDVI e IA",
+    version="1.0.0"
+)
 
 origins = [
     "http://localhost:5173",
@@ -18,7 +22,17 @@ app.add_middleware(
 )
 
 app.include_router(auth.router, prefix=f"{API_V1_STR}/auth", tags=["auth"])
+app.include_router(clients.router, prefix=f"{API_V1_STR}/clients", tags=["clients"])
+app.include_router(properties.router, prefix=f"{API_V1_STR}/properties", tags=["properties"])
 app.include_router(analysis.router, prefix=f"{API_V1_STR}/analysis", tags=["analysis"])
+
+
+@app.on_event("startup")
+def on_startup():
+    from .db.base import Base
+    from .db.session import engine
+    Base.metadata.create_all(bind=engine)
+
 
 @app.get("/")
 def read_root():

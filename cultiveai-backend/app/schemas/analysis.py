@@ -23,6 +23,7 @@ class AnalysisReport(AnalysisResultBase):
     id: int
     created_at: datetime
     owner_id: int
+    aoi_geojson: Dict[str, Any]
 
     class Config:
         from_attributes = True

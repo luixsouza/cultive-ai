@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException, Body, Depends, Response
+from fastapi import APIRouter, HTTPException, Body, Depends, Response, Query
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from ... import schemas, crud, models
+from ...core import security
 from ...services import gee_service, ai_service, report_service
 from .. import deps
 
@@ -66,15 +67,44 @@ def get_all_user_reports(
 @router.get("/{report_id}/download")
 def download_report(
     report_id: int,
+    token: Optional[str] = Query(None),
+    db: Session = Depends(deps.get_db)
+):
+    """Download report HTML. Accepts token via query parameter for direct download links."""
+    if not token:
+        raise HTTPException(status_code=401, detail="Token required")
+
+    # Verify token from query string
+    email = security.verify_token(token, token_type="access")
+    if not email:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+    user = crud.crud_user.get_user_by_email(db, email=email)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+
+    report = crud.crud_analysis.get_analysis_report(db, report_id)
+    if not report:
+        raise HTTPException(status_code=404, detail="Relatório não encontrado")
+    if report.owner_id != user.id:
+        raise HTTPException(status_code=403, detail="Não autorizado")
+
+    return Response(content=report.report_html, media_type="text/html", headers={
+        "Content-Disposition": f"attachment; filename=relatorio_cultiveai_{report_id}.html"
+    })
+
+
+@router.delete("/{report_id}", status_code=204)
+def delete_report(
+    report_id: int,
     db: Session = Depends(deps.get_db),
     current_user: models.User = Depends(deps.get_current_user)
 ):
+    """Delete an analysis report."""
     report = crud.crud_analysis.get_analysis_report(db, report_id)
     if not report:
         raise HTTPException(status_code=404, detail="Relatório não encontrado")
     if report.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Não autorizado")
-    
-    return Response(content=report.report_html, media_type="text/html", headers={
-        "Content-Disposition": f"attachment; filename=relatorio_cultiveai_{report_id}.html"
-    })
+        raise HTTPException(status_code=403, detail="Não autorizado a excluir este relatório")
+    crud.crud_analysis.delete_analysis_report(db, report)
+    return None

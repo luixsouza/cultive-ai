@@ -6,18 +6,19 @@ load_dotenv()
 PROJECT_NAME: str = "CultiveAI"
 API_V1_STR: str = "/api/v1"
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./cultiveai.db")
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GOOGLE_CLOUD_PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT_ID")
 GEMINI_GENERATION_CONFIG = {
     "temperature": 0.7, "top_p": 0.95, "top_k": 64, "max_output_tokens": 8192,
 }
-GEMINI_MODEL_NAME = "gemini-1.5-flash-latest"
+GEMINI_MODEL_NAME = "gemini-2.0-flash"
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-here-change-in-production")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
+REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", 7))
 
 SENTINEL2_COLLECTION_ID = 'COPERNICUS/S2_SR_HARMONIZED'
 CLOUD_FILTER_PERCENTAGE = 20
@@ -32,7 +33,7 @@ NDVI_VIS_PARAMS = {
 }
 DEGRADATION_COLORS = {
     '0': '#CCCCCC', '1': '#a50026', '2': '#d73027',
-    '3': '#fdae61', '4': '##66bd63', '5': '#1a9641'
+    '3': '#fdae61', '4': '#66bd63', '5': '#1a9641'
 }
 DEGRADATION_VIS_PARAMS = {
     'min': 0, 'max': 5,
