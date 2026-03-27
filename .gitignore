@@ -43,3 +43,6 @@ Thumbs.db
 
 # --- Arquivos Sensíveis ---
 .env
+
+# --- Ferramentas de IA ---
+.claude/
