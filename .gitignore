@@ -44,5 +44,8 @@ Thumbs.db
 # --- Arquivos Sensíveis ---
 .env
 
+# --- Docker ---
+pgdata/
+
 # --- Ferramentas de IA ---
 .claude/

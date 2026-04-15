@@ -1,0 +1,51 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cultiveai}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cultiveai}
+      POSTGRES_DB: ${POSTGRES_DB:-cultiveai}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cultiveai}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build:
+      context: ./cultiveai-backend
+      target: dev
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./cultiveai-backend:/app
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-cultiveai}:${POSTGRES_PASSWORD:-cultiveai}@db:5432/${POSTGRES_DB:-cultiveai}
+      CORS_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./cultiveai-frontend
+      target: dev
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./cultiveai-frontend:/app
+      - /app/node_modules
+    environment:
+      VITE_API_BASE_URL: http://localhost:8000/api/v1
+
+volumes:
+  pgdata:
