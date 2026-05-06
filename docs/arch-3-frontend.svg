@@ -21,7 +21,7 @@
 
   <!-- L0: ENTRY -->
   <g>
-    <text x="160" y="266" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="2">CAMADA 0  ·  ENTRY</text>
+    <text x="80" y="266" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="2">CAMADA 0  ·  ENTRY</text>
     <g transform="translate(560, 240)">
       <rect x="0" y="0" width="480" height="84" rx="4" fill="#FFFFFF" stroke="#111827" stroke-width="2"/>
       <text x="240" y="34" text-anchor="middle" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="1.5">«ENTRY POINT»</text>
@@ -32,7 +32,7 @@
 
   <!-- L1: ROUTER -->
   <g>
-    <text x="160" y="406" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="2">CAMADA 1  ·  ROTEADOR</text>
+    <text x="80" y="406" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="2">CAMADA 1  ·  ROTEADOR</text>
     <g transform="translate(560, 380)">
       <rect x="0" y="0" width="480" height="84" rx="4" fill="#F0F9F4" stroke="#2D6A4F" stroke-width="2"/>
       <text x="240" y="34" text-anchor="middle" font-size="13" font-weight="600" fill="#2D6A4F" letter-spacing="1.5">«VUE-ROUTER»</text>
@@ -41,24 +41,26 @@
     <text x="1060" y="430" font-size="14" font-weight="500" fill="#4B5563">guards de autenticação · redirect /login</text>
   </g>
 
-  <!-- Fan-out arrows -->
+  <!-- Fan-out arrows: router → views (uma para cada card) -->
   <g stroke="#9CA3AF" stroke-width="1.5" fill="none">
-    <path d="M 800 464 C 800 490, 250 490, 250 540"/>
-    <path d="M 800 464 C 800 490, 510 490, 510 540"/>
-    <path d="M 800 464 C 800 490, 770 490, 770 540"/>
-    <path d="M 800 464 L 800 540"/>
-    <path d="M 800 464 C 800 490, 1030 490, 1030 540"/>
-    <path d="M 800 464 C 800 490, 1290 490, 1290 540"/>
+    <path d="M 800 464 C 800 490, 265 490, 265 540"/>
+    <path d="M 800 464 C 800 490, 455 490, 455 540"/>
+    <path d="M 800 464 C 800 490, 677 490, 677 540"/>
+    <path d="M 800 464 C 800 490, 843 490, 843 540"/>
+    <path d="M 800 464 C 800 490, 1009 490, 1009 540"/>
+    <path d="M 800 464 C 800 490, 1175 490, 1175 540"/>
+    <path d="M 800 464 C 800 490, 1341 490, 1341 540"/>
   </g>
 
   <!-- L2: VIEWS -->
   <g>
-    <text x="160" y="566" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="2">CAMADA 2  ·  VIEWS</text>
+    <text x="80" y="520" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="2">CAMADA 2  ·  VIEWS</text>
+    <text x="1440" y="520" text-anchor="end" font-size="14" font-weight="600" fill="#374151" font-family="ui-monospace, 'SF Mono', Menlo, monospace">src/views/</text>
+
+    <!-- Públicas (esquerda) -->
     <g transform="translate(160, 540)">
-      <!-- Public -->
       <rect x="0" y="0" width="384" height="220" rx="6" fill="#F9FAFB" stroke="#9CA3AF" stroke-width="1.5"/>
       <text x="20" y="32" font-size="12" font-weight="600" fill="#6B7280" letter-spacing="1.5">«PÚBLICAS · SEM AUTH»</text>
-      <text x="370" y="-12" text-anchor="end" font-size="14" font-weight="600" fill="#374151" font-family="ui-monospace, 'SF Mono', Menlo, monospace">src/views/</text>
 
       <g transform="translate(20, 50)" font-family="ui-monospace, 'SF Mono', Menlo, monospace">
         <g>
@@ -80,61 +82,53 @@
       </g>
     </g>
 
+    <!-- Autenticadas (direita) — AnalysisView é o 5º card, destacado -->
     <g transform="translate(580, 540)">
-      <!-- Authenticated -->
       <rect x="0" y="0" width="860" height="220" rx="6" fill="#F9FAFB" stroke="#9CA3AF" stroke-width="1.5"/>
       <text x="20" y="32" font-size="12" font-weight="600" fill="#6B7280" letter-spacing="1.5">«AUTENTICADAS · TOKEN JWT»</text>
+      <text x="840" y="32" text-anchor="end" font-size="11" font-weight="600" fill="#2D6A4F" letter-spacing="1.5">«FOCO DESTE TRABALHO»</text>
 
       <g transform="translate(20, 50)" font-family="ui-monospace, 'SF Mono', Menlo, monospace">
         <g>
-          <rect x="0" y="0" width="170" height="150" rx="4" fill="#FFFFFF" stroke="#111827" stroke-width="1.5"/>
+          <rect x="0" y="0" width="154" height="150" rx="4" fill="#FFFFFF" stroke="#111827" stroke-width="1.5"/>
           <text x="14" y="28" font-size="11" font-weight="600" fill="#6B7280" letter-spacing="1" font-family="'Inter'">«VIEW»</text>
-          <text x="14" y="56" font-size="16" font-weight="700" fill="#111827">HomeView</text>
-          <line x1="14" y1="72" x2="156" y2="72" stroke="#E5E7EB" stroke-width="1"/>
+          <text x="14" y="56" font-size="15" font-weight="700" fill="#111827">HomeView</text>
+          <line x1="14" y1="72" x2="140" y2="72" stroke="#E5E7EB" stroke-width="1"/>
           <text x="14" y="96" font-size="13" font-weight="500" fill="#374151">/</text>
           <text x="14" y="120" font-size="12" font-weight="400" fill="#6B7280" font-family="'Inter'">landing</text>
         </g>
-        <g transform="translate(186, 0)">
-          <rect x="0" y="0" width="180" height="150" rx="4" fill="#FFFFFF" stroke="#111827" stroke-width="1.5"/>
+        <g transform="translate(166, 0)">
+          <rect x="0" y="0" width="154" height="150" rx="4" fill="#FFFFFF" stroke="#111827" stroke-width="1.5"/>
           <text x="14" y="28" font-size="11" font-weight="600" fill="#6B7280" letter-spacing="1" font-family="'Inter'">«VIEW»</text>
-          <text x="14" y="56" font-size="16" font-weight="700" fill="#111827">DashboardView</text>
-          <line x1="14" y1="72" x2="166" y2="72" stroke="#E5E7EB" stroke-width="1"/>
+          <text x="14" y="56" font-size="15" font-weight="700" fill="#111827">DashboardView</text>
+          <line x1="14" y1="72" x2="140" y2="72" stroke="#E5E7EB" stroke-width="1"/>
           <text x="14" y="96" font-size="13" font-weight="500" fill="#374151">/dashboard</text>
           <text x="14" y="120" font-size="12" font-weight="400" fill="#6B7280" font-family="'Inter'">métricas</text>
         </g>
-        <g transform="translate(382, 0)">
-          <rect x="0" y="0" width="180" height="150" rx="4" fill="#FFFFFF" stroke="#111827" stroke-width="1.5"/>
+        <g transform="translate(332, 0)">
+          <rect x="0" y="0" width="154" height="150" rx="4" fill="#FFFFFF" stroke="#111827" stroke-width="1.5"/>
           <text x="14" y="28" font-size="11" font-weight="600" fill="#6B7280" letter-spacing="1" font-family="'Inter'">«VIEW»</text>
-          <text x="14" y="56" font-size="16" font-weight="700" fill="#111827">ClientsView</text>
-          <line x1="14" y1="72" x2="166" y2="72" stroke="#E5E7EB" stroke-width="1"/>
+          <text x="14" y="56" font-size="15" font-weight="700" fill="#111827">ClientsView</text>
+          <line x1="14" y1="72" x2="140" y2="72" stroke="#E5E7EB" stroke-width="1"/>
           <text x="14" y="96" font-size="13" font-weight="500" fill="#374151">/clients</text>
           <text x="14" y="120" font-size="12" font-weight="400" fill="#6B7280" font-family="'Inter'">CPF/CNPJ</text>
         </g>
-        <g transform="translate(578, 0)">
-          <rect x="0" y="0" width="180" height="150" rx="4" fill="#FFFFFF" stroke="#111827" stroke-width="1.5"/>
+        <g transform="translate(498, 0)">
+          <rect x="0" y="0" width="154" height="150" rx="4" fill="#FFFFFF" stroke="#111827" stroke-width="1.5"/>
           <text x="14" y="28" font-size="11" font-weight="600" fill="#6B7280" letter-spacing="1" font-family="'Inter'">«VIEW»</text>
-          <text x="14" y="56" font-size="16" font-weight="700" fill="#111827">PropertiesView</text>
-          <line x1="14" y1="72" x2="166" y2="72" stroke="#E5E7EB" stroke-width="1"/>
+          <text x="14" y="56" font-size="15" font-weight="700" fill="#111827">PropertiesView</text>
+          <line x1="14" y1="72" x2="140" y2="72" stroke="#E5E7EB" stroke-width="1"/>
           <text x="14" y="96" font-size="13" font-weight="500" fill="#374151">/properties</text>
           <text x="14" y="120" font-size="12" font-weight="400" fill="#6B7280" font-family="'Inter'">geometrias</text>
         </g>
-        <g transform="translate(774, 0)">
-          <rect x="0" y="0" width="60" height="150" rx="4" fill="#F0F9F4" stroke="#2D6A4F" stroke-width="2"/>
-          <text x="30" y="76" text-anchor="middle" font-size="12" font-weight="600" fill="#2D6A4F" font-family="'Inter'" transform="rotate(-90, 30, 76)">…</text>
+        <g transform="translate(664, 0)">
+          <rect x="0" y="0" width="154" height="150" rx="4" fill="#F0F9F4" stroke="#2D6A4F" stroke-width="2"/>
+          <text x="14" y="28" font-size="11" font-weight="600" fill="#2D6A4F" letter-spacing="1" font-family="'Inter'">«VIEW»</text>
+          <text x="14" y="56" font-size="15" font-weight="700" fill="#111827">AnalysisView</text>
+          <line x1="14" y1="72" x2="140" y2="72" stroke="#B7E4C7" stroke-width="1"/>
+          <text x="14" y="96" font-size="13" font-weight="500" fill="#2D6A4F">/analysis</text>
+          <text x="14" y="120" font-size="12" font-weight="400" fill="#4B5563" font-family="'Inter'">NDVI · IA · laudo</text>
         </g>
-      </g>
-    </g>
-
-    <!-- Analysis View — destaque, à direita fora do grupo de auth (separada) -->
-    <g transform="translate(1240, 540)">
-      <text x="0" y="32" font-size="12" font-weight="600" fill="#2D6A4F" letter-spacing="1.5">«FOCO DESTE TRABALHO»</text>
-      <g transform="translate(0, 50)" font-family="ui-monospace, 'SF Mono', Menlo, monospace">
-        <rect x="0" y="0" width="200" height="150" rx="4" fill="#F0F9F4" stroke="#2D6A4F" stroke-width="2"/>
-        <text x="14" y="28" font-size="11" font-weight="600" fill="#2D6A4F" letter-spacing="1" font-family="'Inter'">«VIEW»</text>
-        <text x="14" y="56" font-size="16" font-weight="700" fill="#111827">AnalysisView</text>
-        <line x1="14" y1="72" x2="186" y2="72" stroke="#B7E4C7" stroke-width="1"/>
-        <text x="14" y="96" font-size="13" font-weight="500" fill="#2D6A4F">/analysis</text>
-        <text x="14" y="120" font-size="12" font-weight="400" fill="#4B5563" font-family="'Inter'">NDVI · IA · laudo</text>
       </g>
     </g>
   </g>
@@ -143,7 +137,7 @@
 
   <!-- L3: COMPONENTS -->
   <g>
-    <text x="160" y="848" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="2">CAMADA 3  ·  COMPONENTES REUTILIZÁVEIS</text>
+    <text x="80" y="808" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="2">CAMADA 3  ·  COMPONENTES REUTILIZÁVEIS</text>
     <g transform="translate(160, 820)">
       <rect x="0" y="0" width="1280" height="160" rx="6" fill="#F9FAFB" stroke="#9CA3AF" stroke-width="1.5"/>
       <text x="1260" y="-12" text-anchor="end" font-size="14" font-weight="600" fill="#374151" font-family="ui-monospace, 'SF Mono', Menlo, monospace">src/components/</text>
@@ -176,7 +170,7 @@
 
   <!-- L4: SERVICES -->
   <g>
-    <text x="160" y="1066" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="2">CAMADA 4  ·  SERVIÇOS</text>
+    <text x="80" y="1028" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="2">CAMADA 4  ·  SERVIÇOS</text>
     <g transform="translate(160, 1040)">
       <rect x="0" y="0" width="900" height="120" rx="6" fill="#F9FAFB" stroke="#9CA3AF" stroke-width="1.5"/>
       <text x="880" y="-12" text-anchor="end" font-size="14" font-weight="600" fill="#374151" font-family="ui-monospace, 'SF Mono', Menlo, monospace">src/services/</text>
