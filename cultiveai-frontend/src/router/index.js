@@ -3,6 +3,12 @@ import { isLoggedIn } from "../services/auth";
 
 const routes = [
   {
+    path: "/sobre",
+    name: "Landing",
+    component: () => import("../views/LandingView.vue"),
+    meta: { fullscreen: true },
+  },
+  {
     path: "/login",
     name: "Login",
     component: () => import("../views/LoginView.vue"),
@@ -12,6 +18,12 @@ const routes = [
     path: "/register",
     name: "Register",
     component: () => import("../views/RegisterView.vue"),
+    meta: { guest: true },
+  },
+  {
+    path: "/forgot-password",
+    name: "ForgotPassword",
+    component: () => import("../views/ForgotPasswordView.vue"),
     meta: { guest: true },
   },
   {
