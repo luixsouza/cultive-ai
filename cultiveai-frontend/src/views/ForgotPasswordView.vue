@@ -24,25 +24,25 @@
 
           <div class="mt-10">
             <h2 class="text-4xl md:text-5xl leading-tight">
-              <span class="font-light">Junte-se à</span><br />
-              <span class="font-extrabold">Agricultura Inteligente</span>
+              <span class="font-light">Recupere o acesso</span><br />
+              <span class="font-extrabold">Sem Complicação</span>
             </h2>
             <p class="text-white/85 mt-5 text-sm md:text-base leading-relaxed max-w-md">
-              Crie sua conta e comece a monitorar pastagens com NDVI, Sentinel-2 e IA. Relatórios completos em poucos cliques.
+              Informe seu email cadastrado e enviaremos um link seguro para você redefinir sua senha em segundos.
             </p>
             <router-link
               to="/login"
               class="inline-flex items-center gap-2 mt-7 px-6 py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm ring-1 ring-white/40 text-sm font-medium transition-colors"
             >
               <span class="material-icons-round text-base">arrow_back</span>
-              Já tenho conta
+              Voltar ao login
             </router-link>
           </div>
 
           <div class="flex items-center gap-2 mt-10">
             <span class="w-3 h-1 rounded-full bg-white/40"></span>
-            <span class="w-3 h-1 rounded-full bg-white/40"></span>
             <span class="w-8 h-1 rounded-full bg-white"></span>
+            <span class="w-3 h-1 rounded-full bg-white/40"></span>
           </div>
         </div>
       </div>
@@ -51,24 +51,13 @@
       <div
         class="relative md:w-1/2 md:-ml-6 md:mt-16 md:mb-4 bg-white dark:bg-slate-900 shadow-2xl border border-slate-100 dark:border-slate-800 p-8 md:p-12 md:pl-14 flex flex-col justify-center z-10"
       >
-        <h1 class="text-3xl md:text-4xl font-bold text-slate-800 dark:text-white">Criar Conta</h1>
+        <h1 class="text-3xl md:text-4xl font-bold text-slate-800 dark:text-white">Esqueceu a senha?</h1>
         <p class="text-slate-400 dark:text-slate-500 text-sm mt-2 leading-relaxed">
-          Comece a analisar pastagens com IA em poucos minutos.
+          Sem problema. Informe seu email para receber as instruções de redefinição.
         </p>
 
-        <form @submit.prevent="handleRegister" class="space-y-4 mt-7">
+        <form @submit.prevent="handleSubmit" class="space-y-4 mt-7">
           <div class="border-l-4 border-primary bg-slate-50 dark:bg-slate-800 px-4 py-2.5">
-            <label for="name" class="block text-[10px] tracking-[0.18em] font-semibold text-slate-400 mb-0.5">NOME COMPLETO</label>
-            <input
-              id="name"
-              type="text"
-              v-model="fullName"
-              placeholder="Seu nome"
-              autocomplete="name"
-              class="w-full bg-transparent text-slate-800 dark:text-slate-200 placeholder-slate-400 outline-none"
-            />
-          </div>
-          <div class="bg-slate-50 dark:bg-slate-800 px-4 py-2.5">
             <label for="email" class="block text-[10px] tracking-[0.18em] font-semibold text-slate-400 mb-0.5">EMAIL</label>
             <input
               id="email"
@@ -80,58 +69,32 @@
               class="w-full bg-transparent text-slate-800 dark:text-slate-200 placeholder-slate-400 outline-none"
             />
           </div>
-          <div class="bg-slate-50 dark:bg-slate-800 px-4 py-2.5">
-            <label for="password" class="block text-[10px] tracking-[0.18em] font-semibold text-slate-400 mb-0.5">SENHA</label>
-            <input
-              id="password"
-              type="password"
-              v-model="password"
-              placeholder="Mínimo 6 caracteres"
-              required
-              minlength="6"
-              autocomplete="new-password"
-              class="w-full bg-transparent text-slate-800 dark:text-slate-200 placeholder-slate-400 outline-none"
-            />
-          </div>
-          <div class="bg-slate-50 dark:bg-slate-800 px-4 py-2.5">
-            <label for="confirm" class="block text-[10px] tracking-[0.18em] font-semibold text-slate-400 mb-0.5">CONFIRMAR SENHA</label>
-            <input
-              id="confirm"
-              type="password"
-              v-model="confirmPassword"
-              placeholder="Repita a senha"
-              required
-              minlength="6"
-              autocomplete="new-password"
-              class="w-full bg-transparent text-slate-800 dark:text-slate-200 placeholder-slate-400 outline-none"
-            />
-          </div>
 
           <button
             type="submit"
-            :disabled="loading"
+            :disabled="loading || sent"
             class="w-full py-3.5 bg-gradient-to-r from-primary-dark via-primary to-primary-light hover:opacity-95 text-white font-semibold tracking-[0.22em] text-sm shadow-lg shadow-primary/25 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed mt-2"
           >
-            {{ loading ? "CRIANDO..." : "CRIAR CONTA" }}
+            {{ loading ? "ENVIANDO..." : sent ? "LINK ENVIADO" : "ENVIAR LINK" }}
           </button>
 
+          <p
+            v-if="sent"
+            class="text-primary text-center text-sm bg-primary-bg dark:bg-green-900/30 px-4 py-2.5"
+          >
+            Se o email existir em nossa base, você receberá um link em instantes.
+          </p>
           <p
             v-if="error"
             class="text-danger text-center text-sm bg-danger-bg dark:bg-red-900/30 px-4 py-2.5"
           >
             {{ error }}
           </p>
-          <p
-            v-if="success"
-            class="text-primary text-center text-sm bg-primary-bg dark:bg-green-900/30 px-4 py-2.5"
-          >
-            {{ success }}
-          </p>
         </form>
 
         <p class="text-center text-sm text-slate-400 dark:text-slate-500 mt-8">
-          Já tem conta?
-          <router-link to="/login" class="text-primary font-semibold hover:underline">Fazer login</router-link>
+          Lembrou da senha?
+          <router-link to="/login" class="text-primary font-semibold hover:underline">Entrar</router-link>
         </p>
       </div>
     </div>
@@ -140,30 +103,21 @@
 
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
-import ApiService from "@/services/ApiService";
 
-const fullName = ref("");
 const email = ref("");
-const password = ref("");
-const confirmPassword = ref("");
 const error = ref("");
-const success = ref("");
+const sent = ref(false);
 const loading = ref(false);
-const router = useRouter();
 
-async function handleRegister() {
+async function handleSubmit() {
   error.value = "";
-  success.value = "";
-  if (password.value !== confirmPassword.value) { error.value = "As senhas não conferem."; return; }
-  if (password.value.length < 6) { error.value = "A senha deve ter pelo menos 6 caracteres."; return; }
   loading.value = true;
   try {
-    await ApiService.register(email.value, password.value, fullName.value || null);
-    success.value = "Conta criada! Redirecionando...";
-    setTimeout(() => router.push("/login"), 2000);
+    // TODO: integrar com endpoint do backend quando disponível
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    sent.value = true;
   } catch (err) {
-    error.value = err.response?.data?.detail || "Erro ao criar conta. Tente novamente.";
+    error.value = err.response?.data?.detail || "Não foi possível enviar o link. Tente novamente.";
   } finally {
     loading.value = false;
   }
